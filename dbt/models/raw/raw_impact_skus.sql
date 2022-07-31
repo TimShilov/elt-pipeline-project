@@ -7,5 +7,7 @@
   )
 }}
 
-SELECT $1::VARIANT AS SRC, metadata$filename AS data_source
+SELECT $1::VARIANT AS SRC,
+       CURRENT_TIMESTAMP() AS ingested_at,
+       metadata$filename AS data_source
   FROM {{ external_stage('/ir/skus') }}
