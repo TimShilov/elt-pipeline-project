@@ -45,3 +45,23 @@ models:
                 "vertical_rectangle",
                 "wide_skyscraper"
               ]
+  - name: staging_impact_clicks
+    description: "Staging Impact clicks data"
+    columns:
+      - name: commissionId
+        description: "Unique identifier of a click record"
+        tests:
+          - not_null
+      - name: deviceType
+        description: "Type of the device"
+        tests:
+          - dbt_utils.not_constant
+      - name: clickCount
+        description: "Click count"
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 1
+      - name: eventDate
+        tests:
+          - dbt_utils.accepted_range:
+              max_value: "getdate()"
