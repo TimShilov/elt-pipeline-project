@@ -52,6 +52,7 @@ models:
         description: "Unique identifier of a click record"
         tests:
           - not_null
+          - unique
       - name: deviceType
         description: "Type of the device"
         tests:
