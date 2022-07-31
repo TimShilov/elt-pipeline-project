@@ -1,0 +1,14 @@
+version: 2
+
+models:
+  - name: raw_impact_ads
+    description: "Raw Impact ads data"
+    columns:
+      - name: SRC
+        description: "Raw data"
+        tests:
+          - not_null
+      - name: SRC:Ads
+        description: "Array of actual ad items"
+        tests:
+          - not_null

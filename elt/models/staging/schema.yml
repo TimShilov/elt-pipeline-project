@@ -1,0 +1,17 @@
+version: 2
+
+models:
+  - name: staging_impact_ads
+    description: "Staging Impact ads data"
+    columns:
+      - name: Id
+        description: "Ad id"
+        tests:
+          - not_null
+          - unique
+      - name: AdType
+        description: "Ad type"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['TEXT_LINK', 'BANNER']
