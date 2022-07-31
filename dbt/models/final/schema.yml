@@ -3,6 +3,9 @@ version: 2
 models:
   - name: final_impact_ads
     description: "Final Impact ads data"
+    tests:
+      - dbt_utils.equal_rowcount:
+          compare_model: ref('staging_impact_ads')
     columns:
       - name: Id
         description: "Ad id"
