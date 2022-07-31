@@ -7,5 +7,5 @@
   )
 }}
 
-SELECT $1::VARIANT AS SRC
-  FROM {{ external_stage('/ir/ADS') }}
+SELECT $1::VARIANT AS SRC, metadata$filename AS data_source
+  FROM {{ external_stage('/ir/OFFERS') }}

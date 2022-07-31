@@ -5,7 +5,11 @@
 }}
 
 SELECT t.value:AdCodeTemplate::VARCHAR AS AdCodeTemplate,
-        t.value:AdType::VARCHAR AS AdType,
+        CASE
+            WHEN t.value:AdType::VARCHAR IS NULL THEN NULL
+            WHEN LOWER(t.value:AdType::VARCHAR) = 'not_applicable' then 'n/a'
+            ELSE LOWER(t.value:AdType::VARCHAR)
+        END AS AdType,
         t.value:AllowDeepLinking::BOOLEAN AS AllowDeepLinking,
         t.value:BannerAlternativeTag::VARCHAR AS BannerAlternativeTag,
         t.value:BogoBuyImageUrl::VARCHAR AS BogoBuyImageUrl,
@@ -50,7 +54,7 @@ SELECT t.value:AdCodeTemplate::VARCHAR AS AdCodeTemplate,
         t.value:GetHtmlCodeType::VARCHAR AS GetHtmlCodeType,
         t.value:Gift::VARCHAR AS Gift,
         t.value:IabAdUnit::VARCHAR AS IabAdUnit,
-        t.value:Id::VARCHAR AS Id,
+        t.value:Id::NUMBER AS Id,
         t.value:Labels::VARCHAR AS Labels,
         t.value:LandingPage::VARCHAR AS LandingPage,
         t.value:Language::VARCHAR AS Language,
@@ -73,9 +77,10 @@ SELECT t.value:AdCodeTemplate::VARCHAR AS AdCodeTemplate,
         t.value:RestrictedMediaPartners::VARIANT AS RestrictedMediaPartners,
         t.value:Season::VARCHAR AS Season,
         t.value:SynchAdsPromoCodes::VARCHAR AS SynchAdsPromoCodes,
-        t.value:ThirdPartyServableAdCreativeHeight::VARCHAR AS ThirdPartyServableAdCreativeHeight,
-        t.value:ThirdPartyServableAdCreativeWidth::VARCHAR AS ThirdPartyServableAdCreativeWidth,
+        NULLIF(t.value:ThirdPartyServableAdCreativeHeight, '')::INTEGER AS ThirdPartyServableAdCreativeHeight,
+        NULLIF(t.value:ThirdPartyServableAdCreativeWidth, '')::INTEGER AS ThirdPartyServableAdCreativeWidth,
         t.value:TopSeller::BOOLEAN AS TopSeller,
-        t.value:Uri::VARCHAR AS Uri
+        t.value:Uri::VARCHAR AS Uri,
+        S.data_source AS data_source
   FROM {{ ref('raw_impact_ads') }} AS S
           , TABLE(flatten(S.$1,'Ads')) t
