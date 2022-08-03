@@ -5,36 +5,40 @@
   )
 }}
 
-SELECT 'click' AS actionType,
-       REGEXP_SUBSTR(S.$1['@uri'], 'Start_Date=(\\d{4}-\\d{2}-\\d{2})',1,1,'c',1) AS eventDate,
-        t.value:MediaId::INTEGER AS publisherId,
-        t.value:MediaName::VARCHAR AS publisherName,
-        t.value:UniqueClick::INTEGER AS clickCount,
-        t.value:AdId::INTEGER AS adsId,
-        t.value:campaignId::INTEGER AS campaignId,
-        t.value:CustomerCountry::VARCHAR AS country,
+SELECT  metadata.SRC:networkKeyId AS network_key_id,
+        metadata.SRC:namespace AS namespace,
+        'click' AS actionType,
+        metadata.SRC:clickDate::DATETIME AS eventDate,
+        click.SRC:MediaId::INTEGER AS publisherId,
+        click.SRC:MediaName::VARCHAR AS publisherName,
+        click.SRC:UniqueClick::INTEGER AS clickCount,
+        click.SRC:AdId::INTEGER AS adsId,
+        click.SRC:campaignId::INTEGER AS campaignId,
+        click.SRC:CustomerCountry::VARCHAR AS country,
         deviceTypeMap.output AS deviceType,
-        t.value:CustomerRegion::VARCHAR AS district,
-        DATE_PART(EPOCH_SECOND, REGEXP_SUBSTR(S.$1['@uri'], 'Start_Date=(\\d{4}-\\d{2}-\\d{2})',1,1,'c',1)::DATE) AS unixtime,
+        click.SRC:CustomerRegion::VARCHAR AS district,
+        DATE_PART(EPOCH_SECOND, metadata.SRC:clickDate::DATE) AS unixtime,
         {{
             dbt_utils.surrogate_key([
-                't.value:MediaId',
-                't.value:AdId',
-                't.value:CustomerCountry',
-                't.value:CustomerRegion',
-                't.value:DeviceType',
-                't.value:ReferringUrl'
+                'click.SRC:MediaId',
+                'click.SRC:AdId',
+                'click.SRC:CustomerCountry',
+                'click.SRC:CustomerRegion',
+                'click.SRC:DeviceType',
+                'click.SRC:ReferringUrl'
             ])
         }} AS commissionId,
-       S.data_source AS data_source,
-       S.ingested_at AS ingested_at
-  FROM {{ ref('raw_impact_clicks') }} AS S
-          , TABLE(flatten(S.$1,'Records')) t
-  JOIN {{ ref('map_impact_device_type') }} deviceTypeMap ON EQUAL_NULL(deviceTypeMap.input, LOWER(t.value:DeviceType::VARCHAR))
-WHERE t.value:UniqueClick IS NOT NULL
+       click.data_source AS data_source,
+       click.ingested_at AS ingested_at
+  FROM {{ ref('raw_impact_clicks') }} click
+  LEFT JOIN {{ ref('raw_metadata') }} metadata
+        ON EQUAL_NULL({{ get_filename_from_path('click.data_source') }}, {{ get_filename_from_path('metadata.data_source') }})
+  LEFT JOIN {{ ref('map_impact_device_type') }} deviceTypeMap
+        ON EQUAL_NULL(deviceTypeMap.input, LOWER(click.SRC:DeviceType::VARCHAR))
+WHERE click.SRC:UniqueClick IS NOT NULL
     {% if is_incremental() %}
 
     -- this filter will only be applied on an incremental run
-    AND S.ingested_at > DATEADD(HOUR, 2, CURRENT_TIMESTAMP())
+    AND click.ingested_at > DATEADD(HOUR, 2, CURRENT_TIMESTAMP())
 
     {% endif %}

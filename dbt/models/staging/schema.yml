@@ -9,6 +9,14 @@ models:
         tests:
           - not_null
           - unique
+      - name: network_key_id
+        description: "Account id"
+        tests:
+          - not_null
+      - name: namespace
+        description: "Namespace of the data"
+        tests:
+          - not_null
       - name: data_source
         description: "The path of the file where data is originated from"
         tests:
@@ -47,12 +55,24 @@ models:
               ]
   - name: staging_impact_clicks
     description: "Staging Impact clicks data"
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - network_key_id
+            - commissionId
     columns:
+      - name: network_key_id
+        description: "Account id"
+        tests:
+          - not_null
+      - name: namespace
+        description: "Namespace of the data"
+        tests:
+          - not_null
       - name: commissionId
         description: "Unique identifier of a click record"
         tests:
           - not_null
-          - unique
       - name: deviceType
         description: "Type of the device"
         tests:

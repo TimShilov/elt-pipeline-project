@@ -8,7 +8,3 @@ models:
         description: "Raw data"
         tests:
           - not_null
-      - name: SRC:Ads
-        description: "Array of actual ad items"
-        tests:
-          - not_null
