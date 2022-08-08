@@ -42,7 +42,7 @@ SELECT  ad.SRC:Id::VARCHAR AS id,
         ad.data_source AS data_source
   FROM {{ ref('raw_impact_ads') }} ad
             LEFT JOIN {{ ref('raw_metadata') }} metadata
-        ON EQUAL_NULL({{ get_filename_from_path('ad.data_source') }}, {{ get_filename_from_path('metadata.data_source') }})
+        ON EQUAL_NULL(ad.data_source_filename, metadata.data_source_filename)
 {% if is_incremental() %}
      WHERE ad.SRC:ingested_at >= DATEADD(HOUR, 2, CURRENT_TIMESTAMP())
 

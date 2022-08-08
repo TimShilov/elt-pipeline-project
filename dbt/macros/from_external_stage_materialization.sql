@@ -4,9 +4,9 @@
 
 {% macro ensure_external_stage(stage_name, storage_integration) %}
     {{ log('Making external stage: ' ~ [stage_name, storage_integration] | join(', ')) }}
-    CREATE STAGE IF NOT EXISTS {{ stage_name }}
+    CREATE OR REPLACE STAGE {{ stage_name }}
     STORAGE_INTEGRATION = {{ storage_integration }}
-    URL = 'gcs://affluent-agency-staging/develop_tim/data-engineering-project';
+    URL = 'gcs://affluent-agency-staging/{{ var('storage_root_path') }}';
 {% endmacro %}
 
 {% materialization from_external_stage, adapter='snowflake' -%}

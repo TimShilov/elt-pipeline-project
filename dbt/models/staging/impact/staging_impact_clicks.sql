@@ -136,7 +136,7 @@ FROM (
         ROW_NUMBER() OVER (PARTITION BY network_key_id, commission_id ORDER BY click.ingested_at DESC) AS RANK_IN_KEY
       FROM {{ ref('raw_impact_clicks') }} click
       LEFT JOIN {{ ref('raw_metadata') }} metadata
-            ON EQUAL_NULL({{ get_filename_from_path('click.data_source') }}, {{ get_filename_from_path('metadata.data_source') }})
+            ON EQUAL_NULL(click.data_source_filename, metadata.data_source_filename)
       LEFT JOIN {{ ref('map_impact_device_type') }} deviceTypeMap
             ON EQUAL_NULL(deviceTypeMap.input, LOWER(click.SRC:DeviceType::VARCHAR))
     WHERE click.SRC:UniqueClick IS NOT NULL

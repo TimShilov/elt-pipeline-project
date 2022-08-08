@@ -9,5 +9,5 @@
 
 SELECT $1::VARIANT AS SRC,
        CURRENT_TIMESTAMP() AS ingested_at,
-       metadata$filename AS data_source
+       {{ get_datasource() }}
   FROM {{ external_stage('/ir/commissions') }}
