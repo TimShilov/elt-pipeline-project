@@ -1,8 +1,16 @@
 version: 2
 
 models:
-  - name: staging_impact_ads
-    description: "Staging Impact ads data"
+  - name: affiliate_ad
+    description: "Final ads data"
+    tests:
+      - dbt_utils.equal_rowcount:
+          compare_model: ref('staging_impact_ads')
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - id
+            - network_key_id
+            - namespace
     columns:
       - name: id
         description: "Ad id"
@@ -10,15 +18,11 @@ models:
           - not_null
           - unique
       - name: network_key_id
-        description: "Account id"
+        description: "Id of account this record belongs to"
         tests:
           - not_null
       - name: namespace
-        description: "Namespace of the data"
-        tests:
-          - not_null
-      - name: data_source
-        description: "The path of the file where data is originated from"
+        description: "Namespace (agency) this record belongs to"
         tests:
           - not_null
       - name: type
@@ -54,41 +58,38 @@ models:
                   "vertical_rectangle",
                   "wide_skyscraper",
                 ]
-  - name: staging_impact_clicks
-    description: "Staging Impact clicks data"
+
+  - name: affiliate_traffic
+    description: "Final traffic data"
     tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - network_key_id
-            - commissionId
+      - dbt_utils.equal_rowcount:
+          compare_model: ref('staging_impact_clicks')
     columns:
+      - name: affluent_id
+        description: "Unique transaction identifier"
+        tests:
+          - not_null
+          - unique
       - name: network_key_id
-        description: "Account id"
+        description: "Id of account this record belongs to"
         tests:
           - not_null
       - name: namespace
-        description: "Namespace of the data"
+        description: "Namespace (agency) this record belongs to"
         tests:
           - not_null
-      - name: commission_id
-        description: "Unique identifier of a click record"
+      - name: type
+        description: "Traffic type"
         tests:
           - not_null
-      - name: device_type
-        description: "Type of the device"
-        tests:
-          - dbt_utils.not_constant
+          - accepted_values:
+              severity: error
+              values: ["click", "impression"]
       - name: click_count
-        description: "Click count"
+        description: "Count of clicks"
         tests:
           - dbt_utils.accepted_range:
               min_value: 1
-      - name: type
-        description: "Action type"
-        tests:
-          - accepted_values:
-              severity: error
-              values: ["click"]
       - name: event_datetime
         tests:
           - dbt_utils.accepted_range:
