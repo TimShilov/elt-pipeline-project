@@ -53,4 +53,13 @@ FROM {{ ref('staging_impact_clicks') }}
 {% if is_incremental() %}
 WHERE modified_at > DATEADD(HOUR, 2, CURRENT_TIMESTAMP())
 {% endif %}
+UNION
+SELECT
+    UUID_STRING() AS affluent_id,
+    {{ dbt_utils.star(from=ref('staging_impact_impressions'), except=["rank_in_key"]) }}
+FROM {{ ref('staging_impact_impressions') }}
+
+{% if is_incremental() %}
+WHERE modified_at > DATEADD(HOUR, 2, CURRENT_TIMESTAMP())
+{% endif %}
 

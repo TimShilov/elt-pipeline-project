@@ -21,7 +21,7 @@
 }}
 
 SELECT  ad.SRC:Id::VARCHAR AS id,
-        metadata.SRC:networkKeyId::NUMBER AS network_key_id,
+        metadata.SRC:networkKeyId::INTEGER AS network_key_id,
         metadata.SRC:namespace AS namespace,
         NULL AS advertiser_id,
         ad.SRC:CampaignId::VARCHAR AS campaign_id,

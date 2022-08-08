@@ -84,36 +84,26 @@ SELECT campaign_id,
     type,
     website_id
 FROM (
-   SELECT metadata.SRC:clickDate::DATETIME AS event_datetime,
-        DATE_PART(EPOCH_SECOND, metadata.SRC:clickDate::DATE) AS event_datetime_unixtime,
+   SELECT metadata.SRC:startDate::DATETIME AS event_datetime,
+        DATE_PART(EPOCH_SECOND, metadata.SRC:startDate::DATE) AS event_datetime_unixtime,
         NULL AS processed_datetime,
         metadata.SRC:networkKeyId::INTEGER AS network_key_id,
         metadata.SRC:namespace AS namespace,
-        click.SRC:MediaId::INTEGER AS publisher_id,
+        impression.SRC:media_id::INTEGER AS publisher_id,
         NULL AS terms_id,
         NULL AS channel_id,
-        click.SRC:campaignId::INTEGER AS campaign_id,
+        impression.SRC:campaignId::INTEGER AS campaign_id,
         NULL AS creative_id,
-        {{
-            dbt_utils.surrogate_key([
-                'metadata.SRC:clickDate',
-                'click.SRC:MediaId',
-                'click.SRC:AdId',
-                'click.SRC:CustomerCountry',
-                'click.SRC:CustomerRegion',
-                'click.SRC:DeviceType',
-                'click.SRC:ReferringUrl'
-            ])
-        }} AS commission_id,
-        'click' AS type,
-        click.SRC:UniqueClick::INTEGER AS click_count,
-        0 AS impression_count,
-        click.SRC:CustomerCountry::VARCHAR AS country,
-        click.SRC:CustomerRegion::VARCHAR AS district,
+        CONCAT_WS('_', 'imp', impression.SRC:campaignId, to_char(metadata.SRC:startDate::DATE, 'YYYYMMDD'), impression.SRC:mediaId) AS commission_id,
+        'impression' AS type,
+        0 AS click_count,
+        impression.SRC:Impressions AS impression_count,
+        NULL AS country,
+        NULL AS district,
         NULL AS city,
         NULL AS post_code,
         NULL AS ip_address,
-        deviceTypeMap.output AS device_type,
+        NULL AS device_type,
         NULL AS device_base_name,
         NULL AS device_model,
         NULL AS device_browser,
@@ -132,16 +122,14 @@ FROM (
         NULL AS website_id,
         CURRENT_TIMESTAMP() AS created_at,
         CURRENT_TIMESTAMP() AS modified_at,
-        click.data_source AS data_source,
-        ROW_NUMBER() OVER (PARTITION BY network_key_id, commission_id ORDER BY click.ingested_at DESC) AS RANK_IN_KEY
-      FROM {{ ref('raw_impact_clicks') }} click
+        impression.data_source AS data_source,
+        ROW_NUMBER() OVER (PARTITION BY network_key_id, commission_id ORDER BY impression.ingested_at DESC) AS RANK_IN_KEY
+      FROM {{ ref('raw_impact_impressions') }} impression
       LEFT JOIN {{ ref('raw_metadata') }} metadata
-            ON EQUAL_NULL(click.data_source_filename, metadata.data_source_filename)
-      LEFT JOIN {{ ref('map_impact_device_type') }} deviceTypeMap
-            ON EQUAL_NULL(deviceTypeMap.input, LOWER(click.SRC:DeviceType::VARCHAR))
-    WHERE click.SRC:UniqueClick IS NOT NULL
+            ON EQUAL_NULL(impression.data_source_filename, metadata.data_source_filename)
+    WHERE impression.SRC:Impressions::INTEGER > 0
     {% if is_incremental() %}
-        AND click.ingested_at > DATEADD(HOUR, 2, CURRENT_TIMESTAMP())
+        AND impression.ingested_at > DATEADD(HOUR, 2, CURRENT_TIMESTAMP())
     {% endif %}
 )
 WHERE RANK_IN_KEY = 1
