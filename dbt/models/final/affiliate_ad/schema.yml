@@ -58,39 +58,3 @@ models:
                   "vertical_rectangle",
                   "wide_skyscraper",
                 ]
-
-  - name: affiliate_traffic
-    description: "Final traffic data"
-    tests:
-      - dbt_utils.equal_rowcount:
-          compare_model: ref('staging_impact_clicks')
-    columns:
-      - name: affluent_id
-        description: "Unique transaction identifier"
-        tests:
-          - not_null
-          - unique
-      - name: network_key_id
-        description: "Id of account this record belongs to"
-        tests:
-          - not_null
-      - name: namespace
-        description: "Namespace (agency) this record belongs to"
-        tests:
-          - not_null
-      - name: type
-        description: "Traffic type"
-        tests:
-          - not_null
-          - accepted_values:
-              severity: error
-              values: ["click", "impression"]
-      - name: click_count
-        description: "Count of clicks"
-        tests:
-          - dbt_utils.accepted_range:
-              min_value: 1
-      - name: event_datetime
-        tests:
-          - dbt_utils.accepted_range:
-              max_value: "getdate()"

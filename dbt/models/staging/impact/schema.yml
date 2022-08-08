@@ -60,7 +60,7 @@ models:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - network_key_id
-            - commissionId
+            - commission_id
     columns:
       - name: network_key_id
         description: "Account id"
