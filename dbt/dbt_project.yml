@@ -40,4 +40,4 @@ models:
     staging:
       +materialized: table
     final:
-      +transient: false
+      +transient: true
