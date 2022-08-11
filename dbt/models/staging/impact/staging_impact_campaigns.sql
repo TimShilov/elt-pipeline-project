@@ -18,11 +18,11 @@ SELECT * FROM (
         metadata.SRC:networkKeyId::INTEGER AS network_key_id,
         0::INTEGER AS advertiser_id,
         publisher.campaign:CampaignName::VARCHAR AS name,
-        publisher.SRC:RelationshipState::VARCHAR /* parseRelationshipStatus() */ AS status,
+        publisher.SRC:RelationshipState::VARCHAR /* TODO: parseRelationshipStatus() */ AS status,
         CURRENT_TIMESTAMP() AS created_at,
         CURRENT_TIMESTAMP() AS modified_at,
         publisher.data_source AS data_source,
-        ROW_NUMBER() OVER (PARTITION BY network_key_id, id ORDER BY publisher.ingested_at DESC) AS RANK_IN_KEY
+        ROW_NUMBER() OVER (PARTITION BY network_key_id, id ORDER BY metadata.SRC:timeCreated::DATETIME DESC) AS RANK_IN_KEY
   FROM (SELECT publisher.*,
                c.value AS campaign
           FROM {{ ref('raw_impact_publishers') }} AS publisher,

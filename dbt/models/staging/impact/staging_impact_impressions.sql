@@ -123,7 +123,7 @@ FROM (
         CURRENT_TIMESTAMP() AS created_at,
         CURRENT_TIMESTAMP() AS modified_at,
         impression.data_source AS data_source,
-        ROW_NUMBER() OVER (PARTITION BY network_key_id, commission_id ORDER BY impression.ingested_at DESC) AS RANK_IN_KEY
+        ROW_NUMBER() OVER (PARTITION BY network_key_id, commission_id ORDER BY metadata.SRC:timeCreated::DATETIME DESC) AS RANK_IN_KEY
       FROM {{ ref('raw_impact_impressions') }} impression
       LEFT JOIN {{ ref('raw_metadata') }} metadata
             ON EQUAL_NULL(impression.data_source_filename, metadata.data_source_filename)
