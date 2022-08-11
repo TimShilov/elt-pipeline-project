@@ -1,0 +1,22 @@
+version: 2
+
+models:
+  - name: affiliate_campaign
+    description: "Final campaign data"
+    tests:
+      - dbt_utils.equal_rowcount:
+          compare_model: ref('staging_impact_campaigns')
+    columns:
+      - name: affluent_id
+        description: "Unique campaign identifier"
+        tests:
+          - not_null
+          - unique
+      - name: network_key_id
+        description: "Id of account this record belongs to"
+        tests:
+          - not_null
+      - name: id
+        description: "Internal campaign ID provided by the network"
+        tests:
+          - not_null
