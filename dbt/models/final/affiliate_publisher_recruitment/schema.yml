@@ -1,0 +1,26 @@
+version: 2
+
+models:
+  - name: affiliate_publisher_recruitment
+    description: "Publisher recruitment data data"
+    tests:
+      - dbt_utils.equal_rowcount:
+          compare_model: ref('staging_impact_publisher_recruitments')
+    columns:
+      - name: affluent_id
+        description: "Unique record identifier"
+        tests:
+          - not_null
+          - unique
+      - name: network_key_id
+        description: "Id of account this record belongs to"
+        tests:
+          - not_null
+      - name: campaign_id
+        description: "Internal campaign ID provided by the network"
+        tests:
+          - not_null
+      - name: publisher_id
+        description: "Internal publisher ID provided by the network"
+        tests:
+          - not_null
