@@ -13,25 +13,22 @@
   )
 }}
 
-SELECT * FROM (
-    SELECT publisher.campaign:CampaignId::VARCHAR AS id,
-        metadata.SRC:networkKeyId::INTEGER AS network_key_id,
-        0::INTEGER AS advertiser_id,
-        publisher.campaign:CampaignName::VARCHAR AS name,
-        publisher.SRC:RelationshipState::VARCHAR /* TODO: parseRelationshipStatus() */ AS status,
-        CURRENT_TIMESTAMP() AS created_at,
-        CURRENT_TIMESTAMP() AS modified_at,
-        publisher.data_source AS data_source,
-        ROW_NUMBER() OVER (PARTITION BY network_key_id, id ORDER BY metadata.SRC:timeCreated::DATETIME DESC) AS RANK_IN_KEY
-  FROM (SELECT publisher.*,
-               c.value AS campaign
-          FROM {{ ref('raw_impact_publishers') }} AS publisher,
-               LATERAL FLATTEN(INPUT => SRC:Campaigns) AS c
-         {% if is_incremental() %}
-         WHERE publisher.SRC:ingested_at >= DATEADD(HOUR, 2, CURRENT_TIMESTAMP ())
-         {% endif %}
-         ) AS publisher
-       LEFT JOIN {{ ref('raw_metadata') }} AS metadata
-                 ON EQUAL_NULL(publisher.data_source_filename, metadata.data_source_filename)
-)
-WHERE RANK_IN_KEY = 1
+SELECT publisher.campaign:CampaignId::VARCHAR AS id,
+    metadata.SRC:networkKeyId::INTEGER AS network_key_id,
+    0::INTEGER AS advertiser_id,
+    publisher.campaign:CampaignName::VARCHAR AS name,
+    publisher.SRC:RelationshipState::VARCHAR /* TODO: parseRelationshipStatus() */ AS status,
+    CURRENT_TIMESTAMP() AS created_at,
+    CURRENT_TIMESTAMP() AS modified_at,
+    publisher.data_source AS data_source
+FROM (SELECT publisher.*,
+           c.value AS campaign
+      FROM {{ ref('raw_impact_publishers') }} AS publisher,
+           LATERAL FLATTEN(INPUT => SRC:Campaigns) AS c
+     {% if is_incremental() %}
+     WHERE publisher.SRC:ingested_at >= DATEADD(HOUR, 2, CURRENT_TIMESTAMP ())
+     {% endif %}
+     ) AS publisher
+   LEFT JOIN {{ ref('raw_metadata') }} AS metadata
+             ON EQUAL_NULL(publisher.data_source_filename, metadata.data_source_filename)
+{{ dedupe_by_unique_key() }}

@@ -1,11 +1,11 @@
 version: 2
 
 models:
-  - name: affiliate_campaign
-    description: "Final campaign data"
+  - name: affiliate_sku
+    description: "Final skus data"
     tests:
       - dbt_utils.equal_rowcount:
-          compare_model: ref('staging_impact_campaigns')
+          compare_model: ref('staging_impact_skus')
     columns:
       - name: affluent_id
         description: "Unique record identifier"
@@ -16,7 +16,7 @@ models:
         description: "Id of account this record belongs to"
         tests:
           - not_null
-      - name: id
-        description: "Internal campaign ID provided by the network"
+      - name: namespace
+        description: "Namespace (agency) this record belongs to"
         tests:
           - not_null

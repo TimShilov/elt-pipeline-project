@@ -21,7 +21,7 @@
 
 SELECT
     UUID_STRING() AS affluent_id,
-    {{ dbt_utils.star(from=ref('staging_impact_publisher_recruitments'), except=["rank_in_key"]) }}
+    {{ dbt_utils.star(from=ref('staging_impact_publisher_recruitments')) }}
 FROM {{ ref('staging_impact_publisher_recruitments') }}
 
 {% if is_incremental() %}

@@ -41,3 +41,4 @@ models:
       +materialized: table
     final:
       +transient: true
+      +schema: analytics

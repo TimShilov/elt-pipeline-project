@@ -22,20 +22,20 @@
 
 SELECT  ad.SRC:Id::VARCHAR AS id,
         metadata.SRC:networkKeyId::INTEGER AS network_key_id,
-        metadata.SRC:namespace AS namespace,
-        NULL AS advertiser_id,
+        metadata.SRC:namespace::VARCHAR AS namespace,
+        NULL::VARCHAR AS advertiser_id,
         ad.SRC:CampaignId::VARCHAR AS campaign_id,
-        NULL AS status,
+        NULL::VARCHAR AS status,
         CASE
             WHEN ad.SRC:AdType::VARCHAR IS NULL THEN NULL
             WHEN LOWER(ad.SRC:AdType::VARCHAR) = 'not_applicable' then 'n/a'
             ELSE LOWER(ad.SRC:AdType::VARCHAR)
-        END AS type,
+        END::VARCHAR AS type,
         ad.SRC:Name::VARCHAR AS name,
         ad.SRC:Description::VARCHAR AS description,
         ad.SRC:LandingPage::VARCHAR AS advertiser_landing_page,
         '' AS tracking_link,
-        NULL AS image_url,
+        NULL::VARCHAR AS image_url,
         '' AS thumbnail_url,
         CURRENT_TIMESTAMP() AS created_at,
         CURRENT_TIMESTAMP() AS modified_at,

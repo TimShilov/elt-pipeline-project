@@ -8,7 +8,7 @@ models:
           compare_model: ref('staging_impact_clicks')
     columns:
       - name: affluent_id
-        description: "Unique transaction identifier"
+        description: "Unique record identifier"
         tests:
           - not_null
           - unique
