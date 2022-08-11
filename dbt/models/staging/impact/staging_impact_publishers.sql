@@ -17,7 +17,8 @@
         'primary_email',
         'website',
         'type_override',
-        'modified_at'
+        'modified_at',
+        'data_source'
     ],
   )
 }}
