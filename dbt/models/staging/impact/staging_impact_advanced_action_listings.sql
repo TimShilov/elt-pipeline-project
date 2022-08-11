@@ -115,7 +115,7 @@ SELECT
     commission.SRC:Postcode::VARCHAR AS post_code,
     commission.SRC:IP_Address::VARCHAR AS ip_address,
     deviceTypeMap.output::VARCHAR AS device_type,
-    NULL::VARCHAR AS device_base_name, /* TODO */
+    NULL::VARCHAR AS device_base_name,
     commission.SRC:Device::VARCHAR AS device_model,
     TRIM(SPLIT_PART(commission.SRC:User_Agent, '.', 1))::VARCHAR AS device_browser,
     TRIM(SPLIT_PART(commission.SRC:User_Agent, '.', 2))::VARCHAR AS device_browser_version,
@@ -123,7 +123,7 @@ SELECT
     TRIM(SPLIT_PART(commission.SRC:OS, '.', 2))::VARCHAR AS device_operating_system_version,
     commission.SRC:Referring_URL::VARCHAR AS referral_url,
     {{ dbt_utils.get_url_host(field='commission.SRC:Referring_URL') }}::VARCHAR AS referral_domain,
-    NULL::VARCHAR AS landing_page_url, /* TODO */
+    NULL::VARCHAR AS landing_page_url,
     commission.SRC:SharedId::VARCHAR AS sub_id1,
     NULL::VARCHAR AS sub_id2,
     NULL::VARCHAR AS sub_id3,
@@ -131,11 +131,11 @@ SELECT
     NULL::VARCHAR AS sub_id5,
     NULL::VARCHAR AS sub_id6,
     customerStatusMap.output::BOOLEAN AS repeat_customer,
-    NULL::BOOLEAN AS cross_device, /* TODO */
-    COALESCE(commission.SRC:Adv_String1, commission.SRC:Adv_String2)::VARCHAR AS details,
+    NULL::BOOLEAN AS cross_device,
+    COALESCE(NULLIF(commission.SRC:Adv_String1, ''), NULLIF(commission.SRC:Adv_String2, ''), NULLIF(commission.SRC:Notes, ''))::VARCHAR AS details,
     commission.SRC:EventCode::VARCHAR AS event_code,
     NULL::VARCHAR AS website_id, /* TODO */
-    NULL::VARCHAR AS customer_id, /* TODO */
+    commission.SRC:Customer_Id::VARCHAR AS customer_id,
     commission.SRC:ClientCost::NUMBER - COALESCE(commission.SRC:Payout, 0)::NUMBER AS agency_commission,
     commission.SRC:Shared_Id::VARCHAR AS subaffiliate,
     CURRENT_TIMESTAMP() AS created_at,
