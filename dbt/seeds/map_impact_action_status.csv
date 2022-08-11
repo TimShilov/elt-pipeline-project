@@ -1,0 +1,6 @@
+input,output
+pending,pending
+rejected,rejected
+approved,approved
+invalid,rejected
+reversed,rejected

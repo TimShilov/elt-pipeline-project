@@ -1,0 +1,53 @@
+input,output
+anonymous,0
+beginner,0
+diner_new,0
+diner_unknown,0
+false,0
+guest,0
+logged out,0
+loggedout,0
+new customer,0
+new user,0
+new,0
+newuser,0
+new_customer,0
+new_user,0
+neworder,0
+ni,0
+prospect,0
+shopper anonymous,0
+active,1
+diner_returning,1
+existing user,1
+existing,1
+existinguser,1
+existing_user,1
+loggedin,1
+logged in,1
+logged-in,1
+member,1
+prior,1
+registered,1
+regular logged,1
+repeat,1
+repeat_customer,1
+repeater,1
+return,1
+returning customer,1
+returning,1
+ri,1
+shopper registered,1
+true,1
+reactivated,1
+completed,
+lead,
+notdefined,
+paid,
+pending,
+re-engaged,
+stp approved,
+stp declined,
+undefined,
+unknown,
+update via ftp,
