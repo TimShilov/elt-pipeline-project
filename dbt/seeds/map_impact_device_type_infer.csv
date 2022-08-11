@@ -1,0 +1,13 @@
+input,output
+machine,desktop
+apple mac,desktop
+chromebook,desktop
+desktop,desktop
+phone,mobile
+sm-,mobile
+lm-,mobile
+pixel,mobile
+mobile,mobile
+ipad,tablet
+tablet,tablet
+fire,tablet
