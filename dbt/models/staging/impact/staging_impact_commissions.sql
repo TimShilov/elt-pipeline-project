@@ -84,59 +84,67 @@ SELECT
     NULL::NUMBER AS processed_datetime_unixtime,
     commission.SRC:LockingDate::TIMESTAMPNTZ AS finalized_datetime,
     DATE_PART(EPOCH_SECOND, commission.SRC:LockingDate::TIMESTAMPNTZ)::NUMBER AS finalized_datetime_unixtime,
-    NULL::TIMESTAMPNTZ AS paid_datetime,
-    NULL::NUMBER AS paid_datetime_unixtime,
+    actionListing.paid_datetime::TIMESTAMPNTZ AS paid_datetime,
+    actionListing.paid_datetime_unixtime::NUMBER AS paid_datetime_unixtime,
     commission.SRC:MediaPartnerId::VARCHAR AS publisher_id,
-    NULL::VARCHAR AS terms_id,
-    NULL::VARCHAR AS channel_id,
+    actionListing.terms_id::VARCHAR AS terms_id,
+    actionListing.channel_id::VARCHAR AS channel_id,
     commission.SRC:CampaignId::VARCHAR AS campaign_id,
     commission.SRC:AdId::VARCHAR AS creative_id,
-    NULL::VARCHAR AS click_id,
-    commission.SRC:ActionTrackerId::VARCHAR AS event_type_id,
+    actionListing.click_id::VARCHAR AS click_id,
+    COALESCE(actionListing.event_type_id, commission.SRC:ActionTrackerId)::VARCHAR AS event_type_id,
     commission.SRC:Id::VARCHAR AS commission_id,
-    NULL::VARCHAR AS payment_id,
+    actionListing.payment_id::VARCHAR AS payment_id,
     commission.SRC:Oid::VARCHAR AS order_id,
     IFF(commission.SRC:ReferringType = 'PPC', 'cpc', 'sale')::VARCHAR AS type,
-    COALESCE(actionStatusMap.output, 'approved')::VARCHAR AS status,
-    0::INTEGER AS count, /* TODO */
-    commission.SRC:Currency::VARCHAR AS currency,
-    0::NUMBER(15, 4) AS advertiser_revenue,/* TODO */
-    0::NUMBER(15, 4) AS disputed_advertiser_revenue, /* TODO */
-    0::NUMBER(15, 4) AS publisher_commission, /* TODO */
-    0::NUMBER(15, 4) AS disputed_publisher_commission, /* TODO */
-    0::NUMBER(15, 4) AS network_commission, /* TODO */
-    0::NUMBER(15, 4) AS disputed_network_commission, /* TODO */
-    0::NUMBER(15, 4) AS non_commissionable_advertiser_revenue, /* TODO */
-    commission.SRC:ActionTrackerName::VARCHAR AS event_type_name,
+    COALESCE(actionStatusMap.output, actionListing.status, 'approved')::VARCHAR AS status,
+    1::INTEGER AS count,
+    COALESCE(commission.SRC:Currency, actionListing.currency)::VARCHAR AS currency,
+    (
+        IFF(COALESCE(actionStatusMap.output, 'approved') = 'approved', commission.SRC:Amount::NUMBER, 0)
+        +
+        IFF(COALESCE(actionStatusMap.output, 'approved') = 'pending', commission.SRC:Amount::NUMBER, 0)
+    )::NUMBER(15, 4) AS advertiser_revenue,
+    IFF(COALESCE(actionStatusMap.output, 'approved') = 'rejected', commission.SRC:IntendedAmount::NUMBER, 0)::NUMBER(15, 4) AS disputed_advertiser_revenue,
+    (
+        IFF(COALESCE(actionStatusMap.output, 'approved') = 'approved', commission.SRC:Payout::NUMBER, 0)
+        +
+        IFF(COALESCE(actionStatusMap.output, 'approved') = 'pending', commission.SRC:Payout::NUMBER, 0)
+    )::NUMBER(15, 4) AS publisher_commission,
+    IFF(COALESCE(actionStatusMap.output, 'approved') = 'rejected', commission.SRC:IntendedPayout::NUMBER, 0)::NUMBER(15, 4) AS disputed_publisher_commission,
+    NULL::NUMBER(15, 4) AS network_commission,
+    NULL::NUMBER(15, 4) AS disputed_network_commission,
+    NULL::NUMBER(15, 4) AS non_commissionable_advertiser_revenue,
+    COALESCE(actionListing.event_type_id, commission.SRC:ActionTrackerName)::VARCHAR AS event_type_name,
     commission.SRC:PromoCode::VARCHAR AS promo_code,
     commission.SRC:CustomerCountry::VARCHAR AS country,
     commission.SRC:CustomerRegion::VARCHAR AS district,
     commission.SRC:CustomerCity::VARCHAR AS city,
     commission.SRC:CustomerPostCode::VARCHAR AS post_code,
     commission.SRC:IpAddress::VARCHAR AS ip_address,
-    NULL::VARCHAR AS device_type, /* TODO */
-    NULL::VARCHAR AS device_base_name, /* TODO */
-    NULL::VARCHAR AS device_model, /* TODO */
-    NULL::VARCHAR AS device_browser, /* TODO */
-    NULL::VARCHAR AS device_browser_version, /* TODO */
-    NULL::VARCHAR AS device_operating_system, /* TODO */
-    NULL::VARCHAR AS device_operating_system_version, /* TODO */
-    NULL::VARCHAR AS referral_url, /* TODO */
-    NULL::VARCHAR AS referral_domain, /* TODO */
-    NULL::VARCHAR AS landing_page_url, /* TODO */
+    actionListing.device_type::VARCHAR AS device_type,
+    actionListing.device_base_name::VARCHAR AS device_base_name,
+    actionListing.device_model::VARCHAR AS device_model,
+    actionListing.device_browser::VARCHAR AS device_browser,
+    actionListing.device_browser_version::VARCHAR AS device_browser_version,
+    actionListing.device_operating_system::VARCHAR AS device_operating_system,
+    actionListing.device_operating_system_version::VARCHAR AS device_operating_system_version,
+    actionListing.referral_url::VARCHAR AS referral_url,
+    actionListing.referral_domain::VARCHAR AS referral_domain,
+    actionListing.landing_page_url::VARCHAR AS landing_page_url,
     commission.SRC:SharedId::VARCHAR AS sub_id1,
     NULL::VARCHAR AS sub_id2,
     NULL::VARCHAR AS sub_id3,
     NULL::VARCHAR AS sub_id4,
     NULL::VARCHAR AS sub_id5,
     NULL::VARCHAR AS sub_id6,
-    customerStatusMap.output::BOOLEAN AS repeat_customer,
-    NULL::BOOLEAN AS cross_device, /* TODO */
-    commission.SRC:Note::VARCHAR AS details,
+    COALESCE(customerStatusMap.output, actionListing.repeat_customer)::BOOLEAN AS repeat_customer,
+    NULL::BOOLEAN AS cross_device,
+    COALESCE(NULLIF(commission.SRC:Note, ''), actionListing.details)::VARCHAR AS details,
     commission.SRC:EventCode::VARCHAR AS event_code,
-    NULL::VARCHAR AS website_id, /* TODO */
-    NULL::VARCHAR AS customer_id, /* TODO */
-    commission.SRC:ClientCost::NUMBER - COALESCE(commission.SRC:Payout, 0)::NUMBER AS agency_commission,
+    NULL::VARCHAR AS website_id,
+    actionListing.customer_id::VARCHAR AS customer_id,
+    (commission.SRC:ClientCost::NUMBER - ZEROIFNULL(commission.SRC:Payout::NUMBER))::NUMBER(15, 4) AS agency_commission,
     commission.SRC:SharedId::VARCHAR AS subaffiliate,
     CURRENT_TIMESTAMP() AS created_at,
     CURRENT_TIMESTAMP() AS modified_at,
@@ -144,6 +152,9 @@ SELECT
   FROM {{ ref('raw_impact_commissions') }} commission
   LEFT JOIN {{ ref('raw_metadata') }} metadata
         ON EQUAL_NULL(commission.data_source_filename, metadata.data_source_filename)
+  LEFT JOIN {{ ref('staging_impact_advanced_action_listings') }} actionListing
+       ON EQUAL_NULL(actionListing.commission_id, LOWER(commission.SRC:Id::VARCHAR))
+            AND EQUAL_NULL(actionListing.network_key_id, metadata.SRC:networkKeyId::INTEGER)
   LEFT JOIN {{ ref('map_impact_action_status') }} actionStatusMap
         ON EQUAL_NULL(actionStatusMap.input, LOWER(commission.SRC:State::VARCHAR))
   LEFT JOIN {{ ref('map_impact_customer_status') }} customerStatusMap
