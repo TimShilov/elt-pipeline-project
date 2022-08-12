@@ -98,15 +98,23 @@ SELECT
     commission.SRC:OID::VARCHAR AS order_id,
     'sale'::VARCHAR AS type,
     COALESCE(actionStatusMap.output, 'approved')::VARCHAR AS status,
-    0::INTEGER AS count, /* TODO */
+    1::INTEGER AS count,
     commission.SRC:Original_Currency::VARCHAR AS currency,
-    0::NUMBER(15, 4) AS advertiser_revenue,/* TODO */
-    0::NUMBER(15, 4) AS disputed_advertiser_revenue, /* TODO */
-    0::NUMBER(15, 4) AS publisher_commission, /* TODO */
-    0::NUMBER(15, 4) AS disputed_publisher_commission, /* TODO */
-    0::NUMBER(15, 4) AS network_commission, /* TODO */
-    0::NUMBER(15, 4) AS disputed_network_commission, /* TODO */
-    0::NUMBER(15, 4) AS non_commissionable_advertiser_revenue, /* TODO */
+    (
+        IFF(COALESCE(actionStatusMap.output, 'approved') = 'approved', commission.SRC:Sale_Amount::NUMBER, 0)
+        +
+        IFF(COALESCE(actionStatusMap.output, 'approved') = 'pending', commission.SRC:Sale_Amount::NUMBER, 0)
+    )::NUMBER(15, 4) AS advertiser_revenue,
+    IFF(COALESCE(actionStatusMap.output, 'approved') = 'rejected', commission.SRC:original_sale_amount::NUMBER, 0)::NUMBER(15, 4) AS disputed_advertiser_revenue,
+    (
+        IFF(COALESCE(actionStatusMap.output, 'approved') = 'approved', commission.SRC:Payout::NUMBER, 0)
+        +
+        IFF(COALESCE(actionStatusMap.output, 'approved') = 'pending', commission.SRC:Payout::NUMBER, 0)
+    )::NUMBER(15, 4) AS publisher_commission,
+    IFF(COALESCE(actionStatusMap.output, 'approved') = 'rejected', commission.SRC:original_payout::NUMBER, 0)::NUMBER(15, 4) AS disputed_publisher_commission,
+    NULL::NUMBER(15, 4) AS network_commission,
+    NULL::NUMBER(15, 4) AS disputed_network_commission,
+    NULL::NUMBER(15, 4) AS non_commissionable_advertiser_revenue,
     commission.SRC:Action_Tracker::VARCHAR AS event_type_name,
     commission.SRC:Promo_Code::VARCHAR AS promo_code,
     SPLIT_PART(commission.SRC:Geo_Location, ' - ', 1)::VARCHAR AS country,
@@ -134,9 +142,9 @@ SELECT
     NULL::BOOLEAN AS cross_device,
     COALESCE(NULLIF(commission.SRC:Adv_String1, ''), NULLIF(commission.SRC:Adv_String2, ''), NULLIF(commission.SRC:Notes, ''))::VARCHAR AS details,
     commission.SRC:EventCode::VARCHAR AS event_code,
-    NULL::VARCHAR AS website_id, /* TODO */
+    NULL::VARCHAR AS website_id,
     commission.SRC:Customer_Id::VARCHAR AS customer_id,
-    commission.SRC:ClientCost::NUMBER - COALESCE(commission.SRC:Payout, 0)::NUMBER AS agency_commission,
+    commission.SRC:Client_Cost::NUMBER - COALESCE(commission.SRC:Payout, 0)::NUMBER AS agency_commission,
     commission.SRC:Shared_Id::VARCHAR AS subaffiliate,
     CURRENT_TIMESTAMP() AS created_at,
     CURRENT_TIMESTAMP() AS modified_at,
