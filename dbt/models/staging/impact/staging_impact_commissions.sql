@@ -74,6 +74,7 @@
     
 
 SELECT
+    UUID_STRING() AS affluent_id,
     metadata.SRC:networkKeyId::INTEGER AS network_key_id,
     metadata.SRC:namespace::VARCHAR AS namespace,
     commission.SRC:EventDate::TIMESTAMPNTZ AS event_datetime,
@@ -97,21 +98,21 @@ SELECT
     actionListing.payment_id::VARCHAR AS payment_id,
     commission.SRC:Oid::VARCHAR AS order_id,
     IFF(commission.SRC:ReferringType = 'PPC', 'cpc', 'sale')::VARCHAR AS type,
-    COALESCE(actionStatusMap.output, actionListing.status, 'approved')::VARCHAR AS status,
+    COALESCE(actionStatusDict.output, actionListing.status, 'approved')::VARCHAR AS status,
     1::INTEGER AS count,
     COALESCE(commission.SRC:Currency, actionListing.currency)::VARCHAR AS currency,
     (
-        IFF(COALESCE(actionStatusMap.output, 'approved') = 'approved', commission.SRC:Amount::NUMBER, 0)
+        IFF(COALESCE(actionStatusDict.output, 'approved') = 'approved', commission.SRC:Amount::NUMBER, 0)
         +
-        IFF(COALESCE(actionStatusMap.output, 'approved') = 'pending', commission.SRC:Amount::NUMBER, 0)
+        IFF(COALESCE(actionStatusDict.output, 'approved') = 'pending', commission.SRC:Amount::NUMBER, 0)
     )::NUMBER(15, 4) AS advertiser_revenue,
-    IFF(COALESCE(actionStatusMap.output, 'approved') = 'rejected', commission.SRC:IntendedAmount::NUMBER, 0)::NUMBER(15, 4) AS disputed_advertiser_revenue,
+    IFF(COALESCE(actionStatusDict.output, 'approved') = 'rejected', commission.SRC:IntendedAmount::NUMBER, 0)::NUMBER(15, 4) AS disputed_advertiser_revenue,
     (
-        IFF(COALESCE(actionStatusMap.output, 'approved') = 'approved', commission.SRC:Payout::NUMBER, 0)
+        IFF(COALESCE(actionStatusDict.output, 'approved') = 'approved', commission.SRC:Payout::NUMBER, 0)
         +
-        IFF(COALESCE(actionStatusMap.output, 'approved') = 'pending', commission.SRC:Payout::NUMBER, 0)
+        IFF(COALESCE(actionStatusDict.output, 'approved') = 'pending', commission.SRC:Payout::NUMBER, 0)
     )::NUMBER(15, 4) AS publisher_commission,
-    IFF(COALESCE(actionStatusMap.output, 'approved') = 'rejected', commission.SRC:IntendedPayout::NUMBER, 0)::NUMBER(15, 4) AS disputed_publisher_commission,
+    IFF(COALESCE(actionStatusDict.output, 'approved') = 'rejected', commission.SRC:IntendedPayout::NUMBER, 0)::NUMBER(15, 4) AS disputed_publisher_commission,
     NULL::NUMBER(15, 4) AS network_commission,
     NULL::NUMBER(15, 4) AS disputed_network_commission,
     NULL::NUMBER(15, 4) AS non_commissionable_advertiser_revenue,
@@ -138,7 +139,7 @@ SELECT
     NULL::VARCHAR AS sub_id4,
     NULL::VARCHAR AS sub_id5,
     NULL::VARCHAR AS sub_id6,
-    COALESCE(customerStatusMap.output, actionListing.repeat_customer)::BOOLEAN AS repeat_customer,
+    COALESCE(customerStatusDict.output, actionListing.repeat_customer)::BOOLEAN AS repeat_customer,
     NULL::BOOLEAN AS cross_device,
     COALESCE(NULLIF(commission.SRC:Note, ''), actionListing.details)::VARCHAR AS details,
     commission.SRC:EventCode::VARCHAR AS event_code,
@@ -155,10 +156,10 @@ SELECT
   LEFT JOIN {{ ref('staging_impact_advanced_action_listings') }} actionListing
        ON EQUAL_NULL(actionListing.commission_id, LOWER(commission.SRC:Id::VARCHAR))
             AND EQUAL_NULL(actionListing.network_key_id, metadata.SRC:networkKeyId::INTEGER)
-  LEFT JOIN {{ ref('map_impact_action_status') }} actionStatusMap
-        ON EQUAL_NULL(actionStatusMap.input, LOWER(commission.SRC:State::VARCHAR))
-  LEFT JOIN {{ ref('map_impact_customer_status') }} customerStatusMap
-        ON EQUAL_NULL(customerStatusMap.input, LOWER(commission.SRC:CustomerStatus::VARCHAR))
+  LEFT JOIN {{ ref('dict_impact_action_status') }} actionStatusDict
+        ON EQUAL_NULL(actionStatusDict.input, LOWER(commission.SRC:State::VARCHAR))
+  LEFT JOIN {{ ref('dict_impact_customer_status') }} customerStatusDict
+        ON EQUAL_NULL(customerStatusDict.input, LOWER(commission.SRC:CustomerStatus::VARCHAR))
 WHERE TRUE
 {% if is_incremental() %}
     AND commission.ingested_at > DATEADD(HOUR, 2, CURRENT_TIMESTAMP())

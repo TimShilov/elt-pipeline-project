@@ -97,21 +97,21 @@ SELECT
     NULL::VARCHAR AS payment_id,
     commission.SRC:OID::VARCHAR AS order_id,
     'sale'::VARCHAR AS type,
-    COALESCE(actionStatusMap.output, 'approved')::VARCHAR AS status,
+    COALESCE(actionStatusDict.output, 'approved')::VARCHAR AS status,
     1::INTEGER AS count,
     commission.SRC:Original_Currency::VARCHAR AS currency,
     (
-        IFF(COALESCE(actionStatusMap.output, 'approved') = 'approved', commission.SRC:Sale_Amount::NUMBER, 0)
+        IFF(COALESCE(actionStatusDict.output, 'approved') = 'approved', commission.SRC:Sale_Amount::NUMBER, 0)
         +
-        IFF(COALESCE(actionStatusMap.output, 'approved') = 'pending', commission.SRC:Sale_Amount::NUMBER, 0)
+        IFF(COALESCE(actionStatusDict.output, 'approved') = 'pending', commission.SRC:Sale_Amount::NUMBER, 0)
     )::NUMBER(15, 4) AS advertiser_revenue,
-    IFF(COALESCE(actionStatusMap.output, 'approved') = 'rejected', commission.SRC:original_sale_amount::NUMBER, 0)::NUMBER(15, 4) AS disputed_advertiser_revenue,
+    IFF(COALESCE(actionStatusDict.output, 'approved') = 'rejected', commission.SRC:original_sale_amount::NUMBER, 0)::NUMBER(15, 4) AS disputed_advertiser_revenue,
     (
-        IFF(COALESCE(actionStatusMap.output, 'approved') = 'approved', commission.SRC:Payout::NUMBER, 0)
+        IFF(COALESCE(actionStatusDict.output, 'approved') = 'approved', commission.SRC:Payout::NUMBER, 0)
         +
-        IFF(COALESCE(actionStatusMap.output, 'approved') = 'pending', commission.SRC:Payout::NUMBER, 0)
+        IFF(COALESCE(actionStatusDict.output, 'approved') = 'pending', commission.SRC:Payout::NUMBER, 0)
     )::NUMBER(15, 4) AS publisher_commission,
-    IFF(COALESCE(actionStatusMap.output, 'approved') = 'rejected', commission.SRC:original_payout::NUMBER, 0)::NUMBER(15, 4) AS disputed_publisher_commission,
+    IFF(COALESCE(actionStatusDict.output, 'approved') = 'rejected', commission.SRC:original_payout::NUMBER, 0)::NUMBER(15, 4) AS disputed_publisher_commission,
     NULL::NUMBER(15, 4) AS network_commission,
     NULL::NUMBER(15, 4) AS disputed_network_commission,
     NULL::NUMBER(15, 4) AS non_commissionable_advertiser_revenue,
@@ -122,7 +122,7 @@ SELECT
     SPLIT_PART(commission.SRC:Geo_Location, ' - ', 3)::VARCHAR AS city,
     commission.SRC:Postcode::VARCHAR AS post_code,
     commission.SRC:IP_Address::VARCHAR AS ip_address,
-    deviceTypeMap.output::VARCHAR AS device_type,
+    deviceTypeDict.output::VARCHAR AS device_type,
     NULL::VARCHAR AS device_base_name,
     commission.SRC:Device::VARCHAR AS device_model,
     TRIM(SPLIT_PART(commission.SRC:User_Agent, '.', 1))::VARCHAR AS device_browser,
@@ -138,7 +138,7 @@ SELECT
     NULL::VARCHAR AS sub_id4,
     NULL::VARCHAR AS sub_id5,
     NULL::VARCHAR AS sub_id6,
-    customerStatusMap.output::BOOLEAN AS repeat_customer,
+    customerStatusDict.output::BOOLEAN AS repeat_customer,
     NULL::BOOLEAN AS cross_device,
     COALESCE(NULLIF(commission.SRC:Adv_String1, ''), NULLIF(commission.SRC:Adv_String2, ''), NULLIF(commission.SRC:Notes, ''))::VARCHAR AS details,
     commission.SRC:EventCode::VARCHAR AS event_code,
@@ -152,12 +152,12 @@ SELECT
   FROM {{ ref('raw_impact_advActionListing') }} commission
   LEFT JOIN {{ ref('raw_metadata') }} metadata
         ON EQUAL_NULL(commission.data_source_filename, metadata.data_source_filename)
-  LEFT JOIN {{ ref('map_impact_action_status') }} actionStatusMap
-        ON EQUAL_NULL(actionStatusMap.input, LOWER(commission.SRC:Status::VARCHAR))
-  LEFT JOIN {{ ref('map_impact_device_type_infer') }} deviceTypeMap
-        ON LOWER(commission.SRC:Device::VARCHAR) LIKE CONCAT('%', deviceTypeMap.input, '%')
-  LEFT JOIN {{ ref('map_impact_customer_status') }} customerStatusMap
-        ON EQUAL_NULL(customerStatusMap.input, LOWER(commission.SRC:Customer_Status::VARCHAR))
+  LEFT JOIN {{ ref('dict_impact_action_status') }} actionStatusDict
+        ON EQUAL_NULL(actionStatusDict.input, LOWER(commission.SRC:Status::VARCHAR))
+  LEFT JOIN {{ ref('dict_impact_device_type_infer') }} deviceTypeDict
+        ON LOWER(commission.SRC:Device::VARCHAR) LIKE CONCAT('%', deviceTypeDict.input, '%')
+  LEFT JOIN {{ ref('dict_impact_customer_status') }} customerStatusDict
+        ON EQUAL_NULL(customerStatusDict.input, LOWER(commission.SRC:Customer_Status::VARCHAR))
 WHERE TRUE
 {% if is_incremental() %}
     AND commission.ingested_at > DATEADD(HOUR, 2, CURRENT_TIMESTAMP())

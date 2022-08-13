@@ -1,0 +1,41 @@
+version: 2
+
+models:
+  - name: affiliate_action
+    description: "Final action data"
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - network_key_id
+            - commission_id
+    columns:
+      - name: affluent_id
+        description: "Unique record identifier"
+        tests:
+          - not_null
+          - unique
+      - name: network_key_id
+        description: "Id of account this record belongs to"
+        tests:
+          - not_null
+      - name: namespace
+        description: "Namespace (agency) this record belongs to"
+        tests:
+          - not_null
+      - name: type
+        description: "Action type"
+        tests:
+          - not_null
+          - accepted_values:
+              severity: error
+              values: ["sale", "cpc", "bonus"]
+      - name: count
+        description: "Count of actions"
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 1
+      - name: event_datetime
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: "'2010-01-01'"
+              max_value: "getdate()"

@@ -73,7 +73,7 @@ SELECT metadata.SRC:clickDate::DATETIME AS event_datetime,
     NULL AS city,
     NULL AS post_code,
     NULL AS ip_address,
-    deviceTypeMap.output AS device_type,
+    deviceTypeDict.output AS device_type,
     NULL AS device_base_name,
     NULL AS device_model,
     NULL AS device_browser,
@@ -96,8 +96,8 @@ SELECT metadata.SRC:clickDate::DATETIME AS event_datetime,
   FROM {{ ref('raw_impact_clicks') }} click
   LEFT JOIN {{ ref('raw_metadata') }} metadata
         ON EQUAL_NULL(click.data_source_filename, metadata.data_source_filename)
-  LEFT JOIN {{ ref('map_impact_device_type') }} deviceTypeMap
-        ON EQUAL_NULL(deviceTypeMap.input, LOWER(click.SRC:DeviceType::VARCHAR))
+  LEFT JOIN {{ ref('dict_impact_device_type') }} deviceTypeDict
+        ON EQUAL_NULL(deviceTypeDict.input, LOWER(click.SRC:DeviceType::VARCHAR))
 WHERE click.SRC:UniqueClick IS NOT NULL
 {% if is_incremental() %}
     AND click.ingested_at > DATEADD(HOUR, 2, CURRENT_TIMESTAMP())
