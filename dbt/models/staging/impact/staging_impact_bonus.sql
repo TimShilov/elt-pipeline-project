@@ -11,10 +11,8 @@
         'type',
         'status',
         'currency',
-        'advertiser_revenue',
-        'disputed_advertiser_revenue',
-        'publisher_commissions',
-        'disputed_publisher_commissions',
+        'publisher_commission',
+        'disputed_publisher_commission',
         'modified_at',
         'data_source'
     ],
