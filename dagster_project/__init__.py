@@ -1,6 +1,6 @@
 import os
 
-from dagster import RunRequest, ScheduleEvaluationContext, job, op, repository, schedule
+from dagster import DefaultScheduleStatus, RunRequest, ScheduleEvaluationContext, job, op, repository, schedule
 from dagster_snowflake import snowflake_resource
 from dotenv import load_dotenv
 
@@ -42,7 +42,7 @@ def sync_public_tables():
     sync_network_keys(schema_created)
 
 
-@schedule(job=sync_public_tables, cron_schedule="0 6 * * *")
+@schedule(job=sync_public_tables, cron_schedule="0 6 * * *", default_status=DefaultScheduleStatus.RUNNING)
 def configurable_job_schedule(context: ScheduleEvaluationContext):
     scheduled_datetime = context.scheduled_execution_time.strftime("%m/%d/%Y, %H:%M:%S")
     return RunRequest(
