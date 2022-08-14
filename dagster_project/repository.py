@@ -4,5 +4,5 @@ from jobs import sync_public_tables
 
 
 @repository
-def dagster_project():
+def elt_repo():
     return [sync_public_tables]

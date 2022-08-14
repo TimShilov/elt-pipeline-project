@@ -1,1 +1,1 @@
-from .repository import dagster_project
+from .repository import elt_repo
