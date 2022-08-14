@@ -1,5 +1,6 @@
 dagit==1.0.3
 dagster==1.0.3
+dagster-cloud==1.0.3
 dagster-dbt==0.16.3
 dagster-snowflake==0.16.3
 dbt-core==1.2.0
