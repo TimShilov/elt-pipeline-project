@@ -1,8 +1,8 @@
 from dagster import repository
 
-from dagster_project import jobs
+from jobs import sync_public_tables
 
 
 @repository
 def dagster_project():
-    return jobs
+    return [sync_public_tables]
