@@ -1,5 +1,6 @@
 {{
   config(
+    tags=['impact'],
     materialized='incremental',
     unique_key=['network_key_id', 'commission_id', 'sku_id', 'transaction_id'],
     on_schema_change='sync_all_columns',

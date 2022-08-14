@@ -1,5 +1,6 @@
 {{
   config(
+    tags=['impact'],
     materialized='incremental',
     unique_key=['commission_id', 'network_key_id'],
     cluster_by='event_datetime',

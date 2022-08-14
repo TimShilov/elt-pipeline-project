@@ -42,3 +42,9 @@ models:
     final:
       +transient: true
       +schema: analytics
+      +tags: ["final"]
+
+seeds:
+  elt:
+    impact:
+      +tags: ["impact"]
