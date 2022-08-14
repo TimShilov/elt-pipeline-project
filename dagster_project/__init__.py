@@ -1,8 +1,6 @@
-from dagster import repository
-
 import os
 
-from dagster import job, op
+from dagster import RunRequest, ScheduleEvaluationContext, job, op, repository, schedule
 from dagster_snowflake import snowflake_resource
 from dotenv import load_dotenv
 
@@ -44,35 +42,29 @@ def sync_public_tables():
     sync_network_keys(schema_created)
 
 
-"""
-Example Launchpad configuration
-{
-  'resources': {
-    'snowflake': {
-      'config': {
-        'account': {
-          'env': 'SNOWFLAKE_ACCOUNT'
+@schedule(job=sync_public_tables, cron_schedule="0 6 * * *")
+def configurable_job_schedule(context: ScheduleEvaluationContext):
+    scheduled_datetime = context.scheduled_execution_time.strftime("%m/%d/%Y, %H:%M:%S")
+    return RunRequest(
+        run_key="sync_public_tables",
+        run_config={
+            "resources": {
+                "snowflake": {
+                    "config": {
+                        "account": {"env": "SNOWFLAKE_ACCOUNT"},
+                        "user": {"env": "SNOWFLAKE_USERNAME"},
+                        "password": {"env": "SNOWFLAKE_PASSWORD"},
+                        "database": {"env": "SNOWFLAKE_DATABASE"},
+                        "schema": "DBT",
+                        "warehouse": {"env": "SNOWFLAKE_WAREHOUSE"}
+                    }
+                }
+            }
         },
-        'user': {
-          'env': 'SNOWFLAKE_USERNAME'
-        },
-        'password': {
-          'env': 'SNOWFLAKE_PASSWORD'
-        },
-        'database': {
-          'env': 'SNOWFLAKE_DATABASE'
-        },
-        'schema': 'DBT',
-        'warehouse': {
-          'env': 'SNOWFLAKE_WAREHOUSE'
-        }
-      }
-    }
-  }
-}
-"""
+        tags={"scheduled_datetime": scheduled_datetime}
+    )
 
 
 @repository
 def elt_repo():
-    return [sync_public_tables]
+    return [sync_public_tables, configurable_job_schedule]
