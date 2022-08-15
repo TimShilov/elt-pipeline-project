@@ -40,7 +40,7 @@ jobs:
           ref: ${{ github.head_ref }}
       - name: Inject DBT profiles file
         shell: bash
-        run: 'echo "$DBT_PROFILES_YAML" > ./dbt/profiles.yml'
+        run: 'echo "$DBT_PROFILES_YAML" | base64 -d > ./dbt/profiles.yml'
         env:
           DBT_PROFILES_YAML: ${{ secrets.DBT_PROFILES_YAML }}
       - name: Build and deploy to Dagster Cloud serverless
