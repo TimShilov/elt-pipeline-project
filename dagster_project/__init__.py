@@ -1,10 +1,17 @@
 import os
 
-from dagster import DefaultScheduleStatus, RunRequest, ScheduleEvaluationContext, job, op, repository, schedule
+from dagster import AssetSelection, DefaultScheduleStatus, RunRequest, ScheduleDefinition, ScheduleEvaluationContext, \
+    define_asset_job, \
+    job, op, \
+    repository, schedule, \
+    with_resources
+from dagster_dbt import load_assets_from_dbt_project, dbt_cli_resource
 from dagster_snowflake import snowflake_resource
 from dotenv import load_dotenv
 
 load_dotenv('../.env')
+
+DBT_DIR = './dbt'
 
 source_database = 'AGENCY_DEVELOP_TIM'
 destination_database = os.getenv('SNOWFLAKE_DATABASE')
@@ -84,6 +91,74 @@ def sync_network_keys_schedule(context: ScheduleEvaluationContext):
     )
 
 
+@schedule(job=sync_network_keys_table, cron_schedule="0 */1 * * *", default_status=DefaultScheduleStatus.RUNNING)
+def sync_network_keys_schedule(context: ScheduleEvaluationContext):
+    scheduled_datetime = context.scheduled_execution_time.strftime("%m/%d/%Y, %H:%M:%S")
+
+    return RunRequest(
+        run_key="sync_network_keys_table",
+        run_config=default_run_config,
+        tags={"scheduled_datetime": scheduled_datetime}
+    )
+
+
 @repository
 def elt_repo():
-    return [sync_crosses_table, sync_network_keys_table, sync_crosses_schedule, sync_network_keys_schedule]
+    return [
+        sync_crosses_table,
+        sync_network_keys_table,
+        sync_crosses_schedule,
+        sync_network_keys_schedule,
+        with_resources(
+            definitions=load_assets_from_dbt_project(
+                project_dir=DBT_DIR,
+                profiles_dir=DBT_DIR,
+                use_build_command=True
+            ),
+            resource_defs={
+                "dbt": dbt_cli_resource.configured(
+                    {
+                        "project_dir": DBT_DIR,
+                        "profiles_dir": DBT_DIR,
+                    }
+                )
+            }
+        ),
+        ScheduleDefinition(
+            job=define_asset_job('update_affiliate_actions',
+                                 selection=AssetSelection.keys("analytics/affiliate_action").upstream()),
+            cron_schedule="0 */1 * * *",
+            default_status=DefaultScheduleStatus.RUNNING
+        ),
+        ScheduleDefinition(
+            job=define_asset_job('update_affiliate_traffic',
+                                 selection=AssetSelection.keys("analytics/affiliate_traffic").upstream()),
+            cron_schedule="0 */1 * * *",
+            default_status=DefaultScheduleStatus.RUNNING
+        ),
+        ScheduleDefinition(
+            job=define_asset_job('update_affiliate_sku',
+                                 selection=AssetSelection.keys("analytics/affiliate_sku").upstream()),
+            cron_schedule="0 */1 * * *",
+            default_status=DefaultScheduleStatus.RUNNING
+        ),
+        ScheduleDefinition(
+            job=define_asset_job('update_affiliate_ad',
+                                 selection=AssetSelection.keys("analytics/affiliate_ad").upstream()),
+            cron_schedule="@daily",
+            default_status=DefaultScheduleStatus.RUNNING
+        ),
+        ScheduleDefinition(
+            job=define_asset_job('update_affiliate_campaign',
+                                 selection=AssetSelection.keys("analytics/affiliate_campaign").upstream()),
+            cron_schedule="@daily",
+            default_status=DefaultScheduleStatus.RUNNING
+        ),
+        ScheduleDefinition(
+            job=define_asset_job('update_affiliate_publisher_recruitment',
+                                 selection=AssetSelection.keys(
+                                     "analytics/affiliate_publisher_recruitment").upstream()),
+            cron_schedule="@daily",
+            default_status=DefaultScheduleStatus.RUNNING
+        ),
+    ]
