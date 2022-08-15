@@ -39,7 +39,6 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
       - name: Inject DBT profiles file
-        uses: ubuntu-latest
         shell: bash
         run: |
           echo pwd
