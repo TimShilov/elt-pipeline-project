@@ -9,9 +9,26 @@ from dagster_dbt import load_assets_from_dbt_project, dbt_cli_resource
 from dagster_snowflake import snowflake_resource
 from dotenv import load_dotenv
 
-load_dotenv('../.env')
+load_dotenv('.env')
 
 DBT_DIR = './dbt'
+
+with open(f"{DBT_DIR}/profiles.yml", 'w') as f:
+    f.write(f"""
+elt:
+  outputs:
+    production:
+      account: {os.getenv('SNOWFLAKE_ACCOUNT')}
+      database: {os.getenv('SNOWFLAKE_DATABASE')}
+      password: {os.getenv('SNOWFLAKE_PASSWORD')}
+      role: {os.getenv('SNOWFLAKE_USERNAME')}
+      schema: DBT
+      threads: 8
+      type: snowflake
+      user: {os.getenv('SNOWFLAKE_USERNAME')}
+      warehouse: {os.getenv('SNOWFLAKE_WAREHOUSE')}
+  target: production
+    """)
 
 source_database = 'AGENCY_DEVELOP_TIM'
 destination_database = os.getenv('SNOWFLAKE_DATABASE')
