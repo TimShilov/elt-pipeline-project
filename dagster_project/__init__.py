@@ -30,6 +30,8 @@ elt:
   target: production
     """)
 
+os.system("cd dbt && dbt deps")
+
 source_database = 'AGENCY_DEVELOP_TIM'
 destination_database = os.getenv('SNOWFLAKE_DATABASE')
 
