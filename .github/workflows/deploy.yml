@@ -4,7 +4,7 @@ on:
     branches:
       - "main"
       - "master"
-concurrency: 
+concurrency:
   # Cancel in-progress deploys to main branch
   group: ${{ github.ref }}
   cancel-in-progress: true
@@ -38,6 +38,14 @@ jobs:
         uses: actions/checkout@v3
         with:
           ref: ${{ github.head_ref }}
+      - name: Inject DBT profiles file
+        uses: ubuntu-latest
+        shell: bash
+        run: |
+          echo pwd
+          echo $DBT_PROFILES_YAML > ./dbt/profiles.yml
+        env:
+          DBT_PROFILES_YAML: ${{ secrets.DBT_PROFILES_YAML }}
       - name: Build and deploy to Dagster Cloud serverless
         uses: dagster-io/dagster-cloud-action/actions/serverless_prod_deploy@v0.1
         with:
