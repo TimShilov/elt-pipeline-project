@@ -41,8 +41,8 @@ jobs:
       - name: Inject DBT profiles file
         shell: bash
         run: |
-          echo pwd
-          echo $DBT_PROFILES_YAML > ./dbt/profiles.yml
+          pwd
+          echo "$DBT_PROFILES_YAML" > ./dbt/profiles.yml
         env:
           DBT_PROFILES_YAML: ${{ secrets.DBT_PROFILES_YAML }}
       - name: Build and deploy to Dagster Cloud serverless
