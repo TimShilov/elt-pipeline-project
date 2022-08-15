@@ -42,7 +42,7 @@ jobs:
         with:
           python-version: "3.8.9"
           cache: "pip" # caching pip dependencies
-      - run: pip install -r requirements.txt && cd dbt && dbt deps
+      - run: pip install -r requirements.txt && cd dbt && dbt deps && rm .gitignore
       - name: Build and deploy to Dagster Cloud serverless
         uses: dagster-io/dagster-cloud-action/actions/serverless_prod_deploy@v0.1
         with:
