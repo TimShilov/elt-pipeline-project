@@ -1,0 +1,18 @@
+version: 2
+
+models:
+  - name: affiliate_publisher
+    description: "Final publisher data"
+    tests:
+      - dbt_utils.equal_rowcount:
+          compare_model: ref('staging_impact_publishers')
+    columns:
+      - name: affluent_id
+        description: "Unique record identifier"
+        tests:
+          - not_null
+          - unique
+      - name: network_code
+        description: "Code of the network"
+        tests:
+          - not_null
