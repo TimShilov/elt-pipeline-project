@@ -47,7 +47,7 @@
 
 
 SELECT
-    UUID_STRING() AS affluent_id,
+    UUID_STRING() AS internal_id,
     {{ dbt_utils.star(from=ref('staging_impact_clicks')) }}
 FROM {{ ref('staging_impact_clicks') }}
 
@@ -56,7 +56,7 @@ WHERE modified_at > DATEADD(HOUR, 2, CURRENT_TIMESTAMP())
 {% endif %}
 UNION
 SELECT
-    UUID_STRING() AS affluent_id,
+    UUID_STRING() AS internal_id,
     {{ dbt_utils.star(from=ref('staging_impact_impressions')) }}
 FROM {{ ref('staging_impact_impressions') }}
 

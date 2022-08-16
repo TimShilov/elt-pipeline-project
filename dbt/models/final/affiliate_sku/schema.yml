@@ -7,7 +7,7 @@ models:
       - dbt_utils.equal_rowcount:
           compare_model: ref('staging_impact_skus')
     columns:
-      - name: affluent_id
+      - name: internal_id
         description: "Unique record identifier"
         tests:
           - not_null

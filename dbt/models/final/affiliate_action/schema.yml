@@ -9,7 +9,7 @@ models:
             - network_key_id
             - commission_id
     columns:
-      - name: affluent_id
+      - name: internal_id
         description: "Unique record identifier"
         tests:
           - not_null

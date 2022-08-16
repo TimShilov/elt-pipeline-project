@@ -75,7 +75,7 @@
     
 
 SELECT
-    UUID_STRING() AS affluent_id,
+    UUID_STRING() AS internal_id,
     metadata.SRC:networkKeyId::INTEGER AS network_key_id,
     metadata.SRC:namespace::VARCHAR AS namespace,
     commission.SRC:EventDate::TIMESTAMPNTZ AS event_datetime,

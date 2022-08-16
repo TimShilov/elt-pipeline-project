@@ -15,7 +15,7 @@
 
 
 SELECT
-    UUID_STRING() AS affluent_id,
+    UUID_STRING() AS internal_id,
     {{ dbt_utils.star(from=ref('staging_impact_campaigns')) }}
 FROM {{ ref('staging_impact_campaigns') }}
 
