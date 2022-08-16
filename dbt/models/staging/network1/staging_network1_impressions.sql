@@ -90,6 +90,6 @@ SELECT metadata.SRC:startDate::DATETIME AS event_datetime,
         ON EQUAL_NULL(impression.data_source_filename, metadata.data_source_filename)
 WHERE impression.SRC:Impressions::INTEGER > 0
 {% if is_incremental() %}
-    AND impression.ingested_at > DATEADD(HOUR, 2, CURRENT_TIMESTAMP())
+    AND impression.ingested_at > DATEADD(HOUR, -2, CURRENT_TIMESTAMP())
 {% endif %}
 {{ dedupe_by_unique_key() }}

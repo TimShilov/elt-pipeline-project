@@ -28,7 +28,7 @@ FROM (SELECT publisher.*,
       FROM {{ ref('raw_network1_publishers') }} AS publisher,
            LATERAL FLATTEN(INPUT => SRC:Campaigns) AS c
      {% if is_incremental() %}
-     WHERE publisher.SRC:ingested_at >= DATEADD(HOUR, 2, CURRENT_TIMESTAMP ())
+     WHERE publisher.SRC:ingested_at >= DATEADD(HOUR, -2, CURRENT_TIMESTAMP ())
      {% endif %}
      ) AS publisher
    LEFT JOIN {{ ref('raw_metadata') }} AS metadata

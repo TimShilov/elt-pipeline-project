@@ -49,5 +49,5 @@ SELECT publisher.SRC:Id::VARCHAR AS id,
       LEFT JOIN {{ ref('dict_network1_channel') }} AS channelDict
           ON EQUAL_NULL(channelDict.input, publisher.SRC:PrimaryPromotionalMethod)
 {% if is_incremental() %}
-WHERE publisher.SRC:ingested_at >= DATEADD(HOUR, 2, CURRENT_TIMESTAMP())
+WHERE publisher.SRC:ingested_at >= DATEADD(HOUR, -2, CURRENT_TIMESTAMP())
 {% endif %}

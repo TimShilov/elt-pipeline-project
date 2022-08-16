@@ -30,5 +30,5 @@ SELECT
 FROM {{ ref('staging_network1_skus') }}
 
 {% if is_incremental() %}
-WHERE modified_at > DATEADD(HOUR, 2, CURRENT_TIMESTAMP())
+WHERE modified_at > DATEADD(HOUR, -2, CURRENT_TIMESTAMP())
 {% endif %}

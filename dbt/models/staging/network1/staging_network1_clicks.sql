@@ -101,6 +101,6 @@ SELECT metadata.SRC:clickDate::DATETIME AS event_datetime,
         ON EQUAL_NULL(deviceTypeDict.input, LOWER(click.SRC:DeviceType::VARCHAR))
 WHERE click.SRC:UniqueClick IS NOT NULL
 {% if is_incremental() %}
-    AND click.ingested_at > DATEADD(HOUR, 2, CURRENT_TIMESTAMP())
+    AND click.ingested_at > DATEADD(HOUR, -2, CURRENT_TIMESTAMP())
 {% endif %}
 {{ dedupe_by_unique_key() }}

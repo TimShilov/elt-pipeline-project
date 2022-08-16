@@ -163,6 +163,6 @@ SELECT
         ON EQUAL_NULL(customerStatusDict.input, LOWER(commission.SRC:CustomerStatus::VARCHAR))
 WHERE TRUE
 {% if is_incremental() %}
-    AND commission.ingested_at > DATEADD(HOUR, 2, CURRENT_TIMESTAMP())
+    AND commission.ingested_at > DATEADD(HOUR, -2, CURRENT_TIMESTAMP())
 {% endif %}
 {{ dedupe_by_unique_key() }}

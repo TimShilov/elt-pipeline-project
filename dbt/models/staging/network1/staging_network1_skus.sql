@@ -51,6 +51,6 @@ SELECT
         ON EQUAL_NULL(sku.data_source_filename, metadata.data_source_filename)
 WHERE NULLIF(TRIM(sku.SRC:ActionId), '') IS NOT NULL
 {% if is_incremental() %}
-    AND sku.ingested_at > DATEADD(HOUR, 2, CURRENT_TIMESTAMP())
+    AND sku.ingested_at > DATEADD(HOUR, -2, CURRENT_TIMESTAMP())
 {% endif %}
 {{ dedupe_by_unique_key() }}

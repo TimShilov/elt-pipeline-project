@@ -42,6 +42,6 @@ SELECT
         ON EQUAL_NULL(bonus.data_source_filename, metadata.data_source_filename)
 WHERE TRUE
 {% if is_incremental() %}
-    AND bonus.ingested_at > DATEADD(HOUR, 2, CURRENT_TIMESTAMP())
+    AND bonus.ingested_at > DATEADD(HOUR, -2, CURRENT_TIMESTAMP())
 {% endif %}
 {{ dedupe_by_unique_key() }}
