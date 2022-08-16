@@ -26,7 +26,8 @@
 
 SELECT publisher.SRC:Id::VARCHAR AS id,
        metadata.SRC:apiCode::VARCHAR AS network_code,
-       COALESCE(publisher.SRC:Name, publisher.SRC:Website)::VARCHAR AS name,
+       /* Using MD5 to mask real publisher names for demo purposes only */
+       MD5(COALESCE(publisher.SRC:Name, publisher.SRC:Website))::VARCHAR AS name,
        publisher.SRC:Description::VARCHAR AS description,
        publisher.SRC:City::VARCHAR AS city,
        publisher.SRC:CountryState::VARCHAR AS district,
