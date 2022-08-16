@@ -164,20 +164,20 @@ def elt_repo():
         ScheduleDefinition(
             job=define_asset_job('update_affiliate_ad',
                                  selection=AssetSelection.keys("analytics/affiliate_ad").upstream()),
-            cron_schedule="@daily",
+            cron_schedule="0 */1 * * *",
             default_status=DefaultScheduleStatus.RUNNING
         ),
         ScheduleDefinition(
             job=define_asset_job('update_affiliate_campaign',
                                  selection=AssetSelection.keys("analytics/affiliate_campaign").upstream()),
-            cron_schedule="@daily",
+            cron_schedule="0 */1 * * *",
             default_status=DefaultScheduleStatus.RUNNING
         ),
         ScheduleDefinition(
             job=define_asset_job('update_affiliate_publisher_recruitment',
                                  selection=AssetSelection.keys(
                                      "analytics/affiliate_publisher_recruitment").upstream()),
-            cron_schedule="@daily",
+            cron_schedule="0 */1 * * *",
             default_status=DefaultScheduleStatus.RUNNING
         ),
     ]
