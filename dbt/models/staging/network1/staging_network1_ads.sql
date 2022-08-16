@@ -46,5 +46,5 @@ SELECT  ad.SRC:Id::VARCHAR AS id,
         ON EQUAL_NULL(ad.data_source_filename, metadata.data_source_filename)
 {% if is_incremental() %}
      WHERE ad.SRC:ingested_at >= DATEADD(HOUR, 2, CURRENT_TIMESTAMP())
-
 {% endif %}
+{{ dedupe_by_unique_key() }}

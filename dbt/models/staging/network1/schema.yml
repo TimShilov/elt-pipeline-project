@@ -3,12 +3,16 @@ version: 2
 models:
   - name: staging_network1_ads
     description: "Staging Network1 ads data"
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - id
+            - network_key_id
     columns:
       - name: id
         description: "Ad id"
         tests:
           - not_null
-          - unique
       - name: network_key_id
         description: "Account id"
         tests:
