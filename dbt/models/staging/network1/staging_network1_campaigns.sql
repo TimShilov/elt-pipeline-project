@@ -16,6 +16,7 @@
 
 SELECT publisher.campaign:CampaignId::VARCHAR AS id,
     metadata.SRC:networkKeyId::INTEGER AS network_key_id,
+    metadata.SRC:namespace::VARCHAR AS namespace,
     0::INTEGER AS advertiser_id,
     publisher.campaign:CampaignName::VARCHAR AS name,
     publisher.SRC:RelationshipState::VARCHAR /* TODO: parseRelationshipStatus() */ AS status,

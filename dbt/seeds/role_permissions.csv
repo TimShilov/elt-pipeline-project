@@ -1,0 +1,5 @@
+role,allowed_namespace
+TIM_DE_PROJECT,client1
+TIM_DE_PROJECT,client2
+TIM_DE_PROJECT_CLIENT1,client1
+TIM_DE_PROJECT_CLIENT2,client2

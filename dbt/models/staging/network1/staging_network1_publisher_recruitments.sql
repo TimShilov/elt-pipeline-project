@@ -23,6 +23,7 @@
 SELECT
     publisher.SRC:Id::VARCHAR AS publisher_id,
     metadata.SRC:networkKeyId::INTEGER AS network_key_id,
+    metadata.SRC:namespace::VARCHAR AS namespace,
     publisher.campaign:CampaignId::VARCHAR AS campaign_id,
     NULL::DATE AS apply_date,
     publisher.campaign:JoinDate::DATE AS join_date,
