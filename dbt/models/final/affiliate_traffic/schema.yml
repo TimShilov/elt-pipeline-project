@@ -35,4 +35,4 @@ models:
       - name: event_datetime
         tests:
           - dbt_utils.accepted_range:
-              max_value: "getdate()"
+              max_value: "DATEADD(DAY, 1, CURRENT_TIMESTAMP)"

@@ -96,7 +96,7 @@ models:
       - name: event_datetime
         tests:
           - dbt_utils.accepted_range:
-              max_value: "getdate()"
+              max_value: "DATEADD(DAY, 1, CURRENT_TIMESTAMP)"
 
   - name: staging_network1_commissions
     description: "Staging Network1 commissions data"
@@ -140,4 +140,4 @@ models:
         tests:
           - dbt_utils.accepted_range:
               min_value: "'2010-01-01'"
-              max_value: "getdate()"
+              max_value: "DATEADD(DAY, 1, CURRENT_TIMESTAMP)"
