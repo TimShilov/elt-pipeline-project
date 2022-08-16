@@ -5,7 +5,7 @@ models:
     description: "Final campaign data"
     tests:
       - dbt_utils.equal_rowcount:
-          compare_model: ref('staging_impact_campaigns')
+          compare_model: ref('staging_network1_campaigns')
     columns:
       - name: internal_id
         description: "Unique record identifier"

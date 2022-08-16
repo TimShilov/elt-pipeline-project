@@ -1,6 +1,6 @@
 {{
   config(
-    tags=['impact'],
+    tags=['network1'],
     materialized='incremental',
     unique_key = ['id', 'network_key_id'],
     on_schema_change='sync_all_columns',
@@ -41,7 +41,7 @@ SELECT  ad.SRC:Id::VARCHAR AS id,
         CURRENT_TIMESTAMP() AS created_at,
         CURRENT_TIMESTAMP() AS modified_at,
         ad.data_source AS data_source
-  FROM {{ ref('raw_impact_ads') }} ad
+  FROM {{ ref('raw_network1_ads') }} ad
             LEFT JOIN {{ ref('raw_metadata') }} metadata
         ON EQUAL_NULL(ad.data_source_filename, metadata.data_source_filename)
 {% if is_incremental() %}

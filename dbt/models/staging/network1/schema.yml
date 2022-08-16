@@ -1,8 +1,8 @@
 version: 2
 
 models:
-  - name: staging_impact_ads
-    description: "Staging Impact ads data"
+  - name: staging_network1_ads
+    description: "Staging Network1 ads data"
     columns:
       - name: id
         description: "Ad id"
@@ -54,8 +54,8 @@ models:
                   "vertical_rectangle",
                   "wide_skyscraper",
                 ]
-  - name: staging_impact_clicks
-    description: "Staging Impact clicks data"
+  - name: staging_network1_clicks
+    description: "Staging Network1 clicks data"
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
@@ -94,11 +94,11 @@ models:
           - dbt_utils.accepted_range:
               max_value: "getdate()"
 
-  - name: staging_impact_commissions
-    description: "Staging Impact commissions data"
+  - name: staging_network1_commissions
+    description: "Staging Network1 commissions data"
     tests:
       - dbt_utils.fewer_rows_than:
-          compare_model: ref('raw_impact_commissions')
+          compare_model: ref('raw_network1_commissions')
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - network_key_id

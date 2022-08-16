@@ -1,6 +1,6 @@
 {{
   config(
-    tags=['impact'],
+    tags=['network1'],
     materialized='incremental',
     unique_key=['commission_id', 'network_key_id'],
     cluster_by='event_datetime',
@@ -94,10 +94,10 @@ SELECT metadata.SRC:clickDate::DATETIME AS event_datetime,
     CURRENT_TIMESTAMP() AS created_at,
     CURRENT_TIMESTAMP() AS modified_at,
     click.data_source AS data_source
-  FROM {{ ref('raw_impact_clicks') }} click
+  FROM {{ ref('raw_network1_clicks') }} click
   LEFT JOIN {{ ref('raw_metadata') }} metadata
         ON EQUAL_NULL(click.data_source_filename, metadata.data_source_filename)
-  LEFT JOIN {{ ref('dict_impact_device_type') }} deviceTypeDict
+  LEFT JOIN {{ ref('dict_network1_device_type') }} deviceTypeDict
         ON EQUAL_NULL(deviceTypeDict.input, LOWER(click.SRC:DeviceType::VARCHAR))
 WHERE click.SRC:UniqueClick IS NOT NULL
 {% if is_incremental() %}

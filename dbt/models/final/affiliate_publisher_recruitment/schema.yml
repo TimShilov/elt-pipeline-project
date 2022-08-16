@@ -5,7 +5,7 @@ models:
     description: "Publisher recruitment data data"
     tests:
       - dbt_utils.equal_rowcount:
-          compare_model: ref('staging_impact_publisher_recruitments')
+          compare_model: ref('staging_network1_publisher_recruitments')
     columns:
       - name: internal_id
         description: "Unique record identifier"

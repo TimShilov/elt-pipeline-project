@@ -5,7 +5,7 @@ models:
     description: "Final publisher data"
     tests:
       - dbt_utils.equal_rowcount:
-          compare_model: ref('staging_impact_publishers')
+          compare_model: ref('staging_network1_publishers')
     columns:
       - name: internal_id
         description: "Unique record identifier"

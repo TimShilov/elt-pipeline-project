@@ -1,8 +1,8 @@
 version: 2
 
 models:
-  - name: raw_impact_ads
-    description: "Raw Impact ads data"
+  - name: raw_network1_ads
+    description: "Raw Network1 ads data"
     columns:
       - name: SRC
         description: "Raw data"

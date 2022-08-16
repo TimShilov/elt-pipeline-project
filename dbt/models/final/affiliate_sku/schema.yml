@@ -5,7 +5,7 @@ models:
     description: "Final skus data"
     tests:
       - dbt_utils.equal_rowcount:
-          compare_model: ref('staging_impact_skus')
+          compare_model: ref('staging_network1_skus')
     columns:
       - name: internal_id
         description: "Unique record identifier"

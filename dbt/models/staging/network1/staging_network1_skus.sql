@@ -1,6 +1,6 @@
 {{
   config(
-    tags=['impact'],
+    tags=['network1'],
     materialized='incremental',
     unique_key=['network_key_id', 'commission_id', 'sku_id', 'transaction_id'],
     on_schema_change='sync_all_columns',
@@ -46,7 +46,7 @@ SELECT
     CURRENT_TIMESTAMP() AS created_at,
     CURRENT_TIMESTAMP() AS modified_at,
     sku.data_source AS data_source
-  FROM {{ ref('raw_impact_skus') }} sku
+  FROM {{ ref('raw_network1_skus') }} sku
   LEFT JOIN {{ ref('raw_metadata') }} metadata
         ON EQUAL_NULL(sku.data_source_filename, metadata.data_source_filename)
 WHERE NULLIF(TRIM(sku.SRC:ActionId), '') IS NOT NULL

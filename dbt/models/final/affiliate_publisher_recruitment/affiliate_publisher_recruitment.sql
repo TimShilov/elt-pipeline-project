@@ -21,8 +21,8 @@
 
 SELECT
     UUID_STRING() AS internal_id,
-    {{ dbt_utils.star(from=ref('staging_impact_publisher_recruitments')) }}
-FROM {{ ref('staging_impact_publisher_recruitments') }}
+    {{ dbt_utils.star(from=ref('staging_network1_publisher_recruitments')) }}
+FROM {{ ref('staging_network1_publisher_recruitments') }}
 
 {% if is_incremental() %}
 WHERE modified_at > DATEADD(HOUR, 2, CURRENT_TIMESTAMP())

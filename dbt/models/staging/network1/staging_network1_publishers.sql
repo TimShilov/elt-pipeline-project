@@ -1,6 +1,6 @@
 {{
   config(
-    tags=['impact'],
+    tags=['network1'],
     materialized='incremental',
     unique_key = ['id', 'network_code'],
     on_schema_change='sync_all_columns',
@@ -42,10 +42,10 @@ SELECT publisher.SRC:Id::VARCHAR AS id,
        CURRENT_TIMESTAMP() AS created_at,
        CURRENT_TIMESTAMP() AS modified_at,
        publisher.data_source AS data_source
-  FROM {{ ref('raw_impact_publishers') }} AS publisher
+  FROM {{ ref('raw_network1_publishers') }} AS publisher
       LEFT JOIN {{ ref('raw_metadata') }} AS metadata
           ON EQUAL_NULL(publisher.data_source_filename, metadata.data_source_filename)
-      LEFT JOIN {{ ref('dict_impact_channel') }} AS channelDict
+      LEFT JOIN {{ ref('dict_network1_channel') }} AS channelDict
           ON EQUAL_NULL(channelDict.input, publisher.SRC:PrimaryPromotionalMethod)
 {% if is_incremental() %}
 WHERE publisher.SRC:ingested_at >= DATEADD(HOUR, 2, CURRENT_TIMESTAMP())

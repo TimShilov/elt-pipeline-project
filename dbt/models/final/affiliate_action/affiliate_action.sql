@@ -74,7 +74,7 @@
 
 {# TODO: add this parameter after dbt-utils:0.9.0 release - source_column_name=none #}
 {{ dbt_utils.union_relations(
-    [ref('staging_impact_commissions'), ref('staging_impact_bonus')],
+    [ref('staging_network1_commissions'), ref('staging_network1_bonus')],
     where='modified_at > DATEADD(HOUR, 2, CURRENT_TIMESTAMP())' if is_incremental() else 'TRUE'
 ) }}
 

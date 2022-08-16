@@ -1,6 +1,6 @@
 {{
   config(
-    tags=['impact'],
+    tags=['network1'],
     materialized='incremental',
     unique_key=['commission_id', 'network_key_id'],
     cluster_by='event_datetime',
@@ -37,7 +37,7 @@ SELECT
     CURRENT_TIMESTAMP() AS created_at,
     CURRENT_TIMESTAMP() AS modified_at,
     bonus.data_source AS data_source
-  FROM {{ ref('raw_impact_bonus') }} bonus
+  FROM {{ ref('raw_network1_bonus') }} bonus
   LEFT JOIN {{ ref('raw_metadata') }} metadata
         ON EQUAL_NULL(bonus.data_source_filename, metadata.data_source_filename)
 WHERE TRUE

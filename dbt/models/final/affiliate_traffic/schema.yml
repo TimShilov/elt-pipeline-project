@@ -5,7 +5,7 @@ models:
     description: "Final traffic data"
     tests:
       - dbt_utils.equal_rowcount:
-          compare_model: ref('staging_impact_clicks')
+          compare_model: ref('staging_network1_clicks')
     columns:
       - name: internal_id
         description: "Unique record identifier"

@@ -21,8 +21,8 @@
 }}
 
 SELECT *
-FROM {{ ref('staging_impact_ads') }} AS impact_ad
+FROM {{ ref('staging_network1_ads') }} AS network1_ad
 {% if is_incremental() %}
-  WHERE impact_ad.modified_at >= DATEADD(HOUR, 2, CURRENT_TIMESTAMP())
+  WHERE network1_ad.modified_at >= DATEADD(HOUR, 2, CURRENT_TIMESTAMP())
 
 {% endif %}

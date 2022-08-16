@@ -1,6 +1,6 @@
 {{
   config(
-    tags=['impact'],
+    tags=['network1'],
     materialized='incremental',
     unique_key=['commission_id', 'network_key_id'],
     cluster_by='event_datetime',
@@ -85,7 +85,7 @@ SELECT metadata.SRC:startDate::DATETIME AS event_datetime,
     CURRENT_TIMESTAMP() AS created_at,
     CURRENT_TIMESTAMP() AS modified_at,
     impression.data_source AS data_source
-  FROM {{ ref('raw_impact_impressions') }} impression
+  FROM {{ ref('raw_network1_impressions') }} impression
   LEFT JOIN {{ ref('raw_metadata') }} metadata
         ON EQUAL_NULL(impression.data_source_filename, metadata.data_source_filename)
 WHERE impression.SRC:Impressions::INTEGER > 0

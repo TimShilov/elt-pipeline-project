@@ -1,6 +1,6 @@
 {{
   config(
-    tags=['impact'],
+    tags=['network1'],
     materialized='incremental',
     unique_key=['commission_id', 'network_key_id'],
     cluster_by='event_datetime',
@@ -48,8 +48,8 @@
 
 SELECT
     UUID_STRING() AS internal_id,
-    {{ dbt_utils.star(from=ref('staging_impact_clicks')) }}
-FROM {{ ref('staging_impact_clicks') }}
+    {{ dbt_utils.star(from=ref('staging_network1_clicks')) }}
+FROM {{ ref('staging_network1_clicks') }}
 
 {% if is_incremental() %}
 WHERE modified_at > DATEADD(HOUR, 2, CURRENT_TIMESTAMP())
@@ -57,8 +57,8 @@ WHERE modified_at > DATEADD(HOUR, 2, CURRENT_TIMESTAMP())
 UNION
 SELECT
     UUID_STRING() AS internal_id,
-    {{ dbt_utils.star(from=ref('staging_impact_impressions')) }}
-FROM {{ ref('staging_impact_impressions') }}
+    {{ dbt_utils.star(from=ref('staging_network1_impressions')) }}
+FROM {{ ref('staging_network1_impressions') }}
 
 {% if is_incremental() %}
 WHERE modified_at > DATEADD(HOUR, 2, CURRENT_TIMESTAMP())

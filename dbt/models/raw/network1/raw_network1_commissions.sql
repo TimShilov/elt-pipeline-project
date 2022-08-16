@@ -1,6 +1,6 @@
 {{
   config(
-    tags=['impact'],
+    tags=['network1'],
     materialized='from_external_stage',
     stage_name='GCS_STAGE',
     stage_storage_integration = 'AGENCY_STAGING_GCS',

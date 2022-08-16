@@ -1,6 +1,6 @@
 {{
   config(
-    tags=['impact'],
+    tags=['network1'],
     materialized='incremental',
     unique_key=['commission_id', 'network_key_id'],
     cluster_by='event_datetime',
@@ -150,14 +150,14 @@ SELECT
     CURRENT_TIMESTAMP() AS created_at,
     CURRENT_TIMESTAMP() AS modified_at,
     commission.data_source AS data_source
-  FROM {{ ref('raw_impact_advActionListing') }} commission
+  FROM {{ ref('raw_network1_advActionListing') }} commission
   LEFT JOIN {{ ref('raw_metadata') }} metadata
         ON EQUAL_NULL(commission.data_source_filename, metadata.data_source_filename)
-  LEFT JOIN {{ ref('dict_impact_action_status') }} actionStatusDict
+  LEFT JOIN {{ ref('dict_network1_action_status') }} actionStatusDict
         ON EQUAL_NULL(actionStatusDict.input, LOWER(commission.SRC:Status::VARCHAR))
-  LEFT JOIN {{ ref('dict_impact_device_type_infer') }} deviceTypeDict
+  LEFT JOIN {{ ref('dict_network1_device_type_infer') }} deviceTypeDict
         ON LOWER(commission.SRC:Device::VARCHAR) LIKE CONCAT('%', deviceTypeDict.input, '%')
-  LEFT JOIN {{ ref('dict_impact_customer_status') }} customerStatusDict
+  LEFT JOIN {{ ref('dict_network1_customer_status') }} customerStatusDict
         ON EQUAL_NULL(customerStatusDict.input, LOWER(commission.SRC:Customer_Status::VARCHAR))
 WHERE TRUE
 {% if is_incremental() %}
