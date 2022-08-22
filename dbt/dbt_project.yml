@@ -45,6 +45,10 @@ models:
     lookup:
       +materialized: table
       +schema: lookup
+    assumptions:
+      +materialized: table
+      +schema: assumptions
+      +enabled: false
     alerts:
       +materialized: table
       +schema: alerts
