@@ -183,21 +183,21 @@ def elt_repo():
         ScheduleDefinition(
             job=define_asset_job('update_alert',
                                  selection=AssetSelection.keys(
-                                     "alerts/multiple_sales_from_same_ip").upstream()),
+                                     "alerts/multiple_sales_from_same_ip")),
             cron_schedule="0 8 * * *",
             default_status=DefaultScheduleStatus.RUNNING
         ),
         ScheduleDefinition(
             job=define_asset_job('update_currencies_lookup',
                                  selection=AssetSelection.keys(
-                                     "lookup/currencies_used").upstream()),
+                                     "lookup/currencies_used")),
             cron_schedule="0 8 * * *",
             default_status=DefaultScheduleStatus.RUNNING
         ),
         ScheduleDefinition(
             job=define_asset_job('update_pending_actions',
                                  selection=AssetSelection.keys(
-                                     "lookup/network1_pending_actions").upstream()),
+                                     "lookup/network1_pending_actions")),
             cron_schedule="0 8 * * *",
             default_status=DefaultScheduleStatus.RUNNING
         ),
