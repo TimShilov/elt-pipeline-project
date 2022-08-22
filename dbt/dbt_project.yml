@@ -42,6 +42,12 @@ models:
       +materialized: table
     staging:
       +materialized: table
+    lookup:
+      +materialized: table
+      +schema: lookup
+    alerts:
+      +materialized: table
+      +schema: alerts
     final:
       +transient: true
       +schema: analytics
