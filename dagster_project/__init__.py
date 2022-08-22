@@ -180,4 +180,25 @@ def elt_repo():
             cron_schedule="0 */1 * * *",
             default_status=DefaultScheduleStatus.RUNNING
         ),
+        ScheduleDefinition(
+            job=define_asset_job('update_alert',
+                                 selection=AssetSelection.keys(
+                                     "alerts/multiple_sales_from_same_ip").upstream()),
+            cron_schedule="0 8 * * *",
+            default_status=DefaultScheduleStatus.RUNNING
+        ),
+        ScheduleDefinition(
+            job=define_asset_job('update_currencies_lookup',
+                                 selection=AssetSelection.keys(
+                                     "lookup/currencies_used").upstream()),
+            cron_schedule="0 8 * * *",
+            default_status=DefaultScheduleStatus.RUNNING
+        ),
+        ScheduleDefinition(
+            job=define_asset_job('update_pending_actions',
+                                 selection=AssetSelection.keys(
+                                     "lookup/network1_pending_actions").upstream()),
+            cron_schedule="0 8 * * *",
+            default_status=DefaultScheduleStatus.RUNNING
+        ),
     ]
