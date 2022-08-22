@@ -53,7 +53,7 @@ default_run_config = {
 
 @op(required_resource_keys={'snowflake'})
 def ensure_publisher_schema(context):
-    schema_to_create = f"{destination_database}.PUBLIC";
+    schema_to_create = f"{destination_database}.PUBLIC"
     context.resources.snowflake.execute_query(f"""
         CREATE SCHEMA IF NOT EXISTS {schema_to_create};
     """)
@@ -132,7 +132,8 @@ def elt_repo():
             definitions=load_assets_from_dbt_project(
                 project_dir=DBT_DIR,
                 profiles_dir=DBT_DIR,
-                use_build_command=True
+                use_build_command=True,
+                select="elt",
             ),
             resource_defs={
                 "dbt": dbt_cli_resource.configured(
