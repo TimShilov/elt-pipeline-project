@@ -25,6 +25,9 @@ clean-targets: # directories to be removed by `dbt clean`
 
 vars:
   storage_root_path: "develop_tim/data-engineering-project"
+  dbt_artifacts_schema: "internal"
+
+on-run-end: "{{ dbt_artifacts.upload_results(results) }}"
 
 # Configuring models
 # Full documentation: https://docs.getdbt.com/docs/configuring-models
