@@ -145,38 +145,38 @@ def elt_repo():
         ),
         ScheduleDefinition(
             job=define_asset_job('update_affiliate_actions',
-                                 selection=AssetSelection.keys("analytics/affiliate_action").upstream()),
+                                 selection=AssetSelection.keys("analytics/affiliate_action_view").upstream()),
             cron_schedule="0 */1 * * *",
             default_status=DefaultScheduleStatus.RUNNING
         ),
         ScheduleDefinition(
             job=define_asset_job('update_affiliate_traffic',
-                                 selection=AssetSelection.keys("analytics/affiliate_traffic").upstream()),
+                                 selection=AssetSelection.keys("analytics/affiliate_traffic_view").upstream()),
             cron_schedule="0 */1 * * *",
             default_status=DefaultScheduleStatus.RUNNING
         ),
         ScheduleDefinition(
             job=define_asset_job('update_affiliate_sku',
-                                 selection=AssetSelection.keys("analytics/affiliate_sku").upstream()),
+                                 selection=AssetSelection.keys("analytics/affiliate_sku_view").upstream()),
             cron_schedule="0 */1 * * *",
             default_status=DefaultScheduleStatus.RUNNING
         ),
         ScheduleDefinition(
             job=define_asset_job('update_affiliate_ad',
-                                 selection=AssetSelection.keys("analytics/affiliate_ad").upstream()),
+                                 selection=AssetSelection.keys("analytics/affiliate_ad_view").upstream()),
             cron_schedule="0 */1 * * *",
             default_status=DefaultScheduleStatus.RUNNING
         ),
         ScheduleDefinition(
             job=define_asset_job('update_affiliate_campaign',
-                                 selection=AssetSelection.keys("analytics/affiliate_campaign").upstream()),
+                                 selection=AssetSelection.keys("analytics/affiliate_campaign_view").upstream()),
             cron_schedule="0 */1 * * *",
             default_status=DefaultScheduleStatus.RUNNING
         ),
         ScheduleDefinition(
             job=define_asset_job('update_affiliate_publisher_recruitment',
                                  selection=AssetSelection.keys(
-                                     "analytics/affiliate_publisher_recruitment").upstream()),
+                                     "analytics/affiliate_publisher_recruitment_view").upstream()),
             cron_schedule="0 */1 * * *",
             default_status=DefaultScheduleStatus.RUNNING
         ),
